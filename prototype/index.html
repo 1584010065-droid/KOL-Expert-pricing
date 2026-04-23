@@ -606,7 +606,7 @@
 
           <div class="section">
             <div class="row">
-              <div class="label">账号信息 / 投放平台</div>
+              <div class="label">账号信息 / 投放平台<span class="required-mark">*</span></div>
               <div class="chips" data-group="platform" data-single="true">
                 <span class="chip active" data-value="抖音">抖音</span>
                 <span class="chip" data-value="小红书">小红书</span>
@@ -616,14 +616,14 @@
               </div>
             </div>
             <div class="row">
-              <div class="label">达人类型</div>
+              <div class="label">达人类型<span class="required-mark">*</span></div>
               <div class="chips" data-group="kolType" data-single="true">
                 <span class="chip active" data-value="KOL">KOL</span>
                 <span class="chip" data-value="KOC">KOC</span>
               </div>
             </div>
             <div class="row">
-              <div class="label">输入达人</div>
+              <div class="label">输入达人<span class="required-mark">*</span></div>
               <div class="grid-2">
                 <input id="keyword" placeholder="输入达人昵称 / ID / 链接" />
                 <input id="selectedInput" placeholder="已选达人（可粘贴多个，逗号分隔）" />
@@ -713,19 +713,19 @@
               <div class="panel-title">批量核价公共参数<span class="title-inline-note">（可导出表单）</span></div>
               <div class="grid-2">
                 <div>
-                  <div class="field-caption">投放档期<span class="optional-mark">非必填</span></div>
-                  <input id="schedule" value="2026-05-10 至 2026-05-20" placeholder="仅用于记录或导出，不参与本期分析" />
-                </div>
-                <div>
-                  <div class="field-caption">代理 / 提报方<span class="optional-mark">非必填</span></div>
-                  <input id="agency" value="星河代理" placeholder="仅用于记录或导出，不参与本期分析" />
-                </div>
-                <div>
-                  <div class="field-caption">Campaign / 项目<span class="optional-mark">非必填</span></div>
+                  <div class="field-caption">Campaign / 项目<span class="optional-mark">（非必填）</span></div>
                   <input id="campaignName" value="618 预热投放" placeholder="仅用于记录或导出，不参与本期分析" />
                 </div>
                 <div>
-                  <div class="field-caption">备注<span class="optional-mark">非必填</span></div>
+                  <div class="field-caption">代理 / 提报方<span class="optional-mark">（非必填）</span></div>
+                  <input id="agency" value="星河代理" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">投放档期<span class="optional-mark">（非必填）</span></div>
+                  <input id="schedule" value="2026-05-10 至 2026-05-20" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">备注<span class="optional-mark">（非必填）</span></div>
                   <input id="batchRemark" value="优先处理高偏离与高预算达人" placeholder="仅用于记录或导出，不参与本期分析" />
                 </div>
               </div>
