@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数说雷达 - 达人核价可交互原型</title>
+  <style>
+    :root {
+      --bg: #f5f7ff;
+      --surface: #ffffff;
+      --surface-2: #f8f9ff;
+      --text: #1e2340;
+      --muted: #6b7399;
+      --primary: #5a62ff;
+      --primary-soft: #eceeff;
+      --ok: #06a37a;
+      --warn: #f59f0b;
+      --bad: #ef4444;
+      --line: #e5e8f5;
+      --shadow: 0 12px 32px rgba(26, 38, 95, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans SC", "PingFang SC", "Source Han Sans CN", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% -10%, #dce4ff 0%, transparent 35%),
+        radial-gradient(circle at -5% 10%, #e6ecff 0%, transparent 30%),
+        var(--bg);
+    }
+
+    .app { min-height: 100vh; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+      background: rgba(245, 247, 255, 0.86);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: .4px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .nav button.active {
+      color: var(--primary);
+      border-color: #cfd4ff;
+      background: var(--primary-soft);
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 24px auto;
+      padding: 0 20px 28px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(17, 39, 94, 0.96) 0%, rgba(38, 66, 153, 0.92) 48%, rgba(234, 112, 69, 0.9) 100%);
+      color: #fff;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -80px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      filter: blur(4px);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap: 18px;
+      align-items: end;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: .5px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.78);
+      max-width: 720px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .hero-stat {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .hero-stat strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 24px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .section {
+      border-top: 1px dashed var(--line);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chip.active {
+      color: var(--primary);
+      border-color: #cfd4ff;
+      background: var(--primary-soft);
+      font-weight: 600;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #eef1ff;
+      color: #4c56d9;
+    }
+
+    .tag.ok { background: #e7faf4; color: var(--ok); }
+    .tag.warn { background: #fff7e8; color: var(--warn); }
+    .tag.bad { background: #ffecee; color: var(--bad); }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .kpi {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .kpi .num { font-size: 22px; font-weight: 700; margin-top: 6px; }
+
+    .status-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      background: var(--warn);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: .9; }
+      50% { transform: scale(1.4); opacity: .5; }
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar-item {
+      display: grid;
+      grid-template-columns: 140px 1fr 80px;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .bar {
+      background: #edf0fb;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 10px;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #8a95ff 0%, #5a62ff 100%);
+    }
+
+    .trend {
+      width: 100%;
+      height: 190px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(180deg,#fafbff 0%, #fff 100%);
+      padding: 6px;
+    }
+
+    .risk-item {
+      border-left: 3px solid #ffd888;
+      background: #fffaf0;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .summary-item {
+      padding: 12px;
+      background: #f8faff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .summary-item strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini-note {
+      padding: 12px 14px;
+      background: #fff8ed;
+      border: 1px solid #ffe0b0;
+      border-radius: 12px;
+      color: #8a5a00;
+      font-size: 13px;
+    }
+
+    .footer-note {
+      margin: 18px auto 4px;
+      max-width: 760px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .title-inline-note {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-left: 6px;
+    }
+
+    .optional-mark {
+      color: var(--muted);
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    .required-mark {
+      color: var(--bad);
+      font-size: 12px;
+      margin-left: 4px;
+      font-weight: 600;
+    }
+
+    .progress-shell {
+      height: 12px;
+      border-radius: 999px;
+      background: #ebefff;
+      overflow: hidden;
+      margin: 12px 0 6px;
+    }
+
+    .progress-shell span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #3556df 0%, #ff8a4c 100%);
+      transition: width .35s ease;
+    }
+
+    .detail-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .decision-banner {
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fff8ed 0%, #fff 100%);
+      border: 1px solid #ffe0b0;
+    }
+
+    .decision-banner strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 6px;
+      color: #9a4e00;
+    }
+
+    .audit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      gap: 12px;
+    }
+
+    .field-caption {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .inline-field {
+      min-width: 150px;
+    }
+
+    .table-input,
+    .table-select {
+      width: 100%;
+      min-width: 120px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      background: #fbfcff;
+    }
+
+    .table-ops {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .state-banner {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+      margin-bottom: 14px;
+    }
+
+    .state-banner.pending {
+      border-color: #ffe0b0;
+      background: linear-gradient(135deg, #fff8ed 0%, #fff 100%);
+    }
+
+    .state-banner strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .list-info {
+      display: grid;
+      gap: 10px;
+    }
+
+    .list-info-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--line);
+      font-size: 13px;
+    }
+
+    .list-info-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .empty-box {
+      border: 1px dashed #d5dbef;
+      border-radius: 12px;
+      padding: 18px;
+      color: var(--muted);
+      background: #fbfcff;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .prep-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .import-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 12px;
+    }
+
+    .textarea-lg {
+      min-height: 156px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .stat-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stat-item {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      font-size: 13px;
+    }
+
+    .stat-item strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .detail-summary {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .decision-summary {
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f6f8ff 0%, #fff 100%);
+      border: 1px solid var(--line);
+    }
+
+    .decision-summary .price {
+      display: block;
+      margin: 8px 0 10px;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric-card {
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+    }
+
+    .metric-card .num {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .viz-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px;
+    }
+
+    .viz-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .delta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .delta-box {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      font-size: 13px;
+    }
+
+    .delta-box strong {
+      display: block;
+      margin: 6px 0 4px;
+      font-size: 24px;
+    }
+
+    .delta-box.up strong { color: var(--bad); }
+    .delta-box.down strong { color: var(--ok); }
+
+    .perf-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .perf-item {
+      display: grid;
+      grid-template-columns: 96px 1fr 56px;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .mini-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 980px) {
+      .grid-2, .two-col, .kpi-grid, .panel-grid, .summary-strip, .audit-grid, .hero-grid, .hero-stats, .prep-grid, .import-grid, .detail-summary, .metric-strip, .viz-grid, .delta-grid, .mini-kpi-grid { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      .bar-item, .perf-item { grid-template-columns: 1fr; }
+      .detail-header { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">数说雷达 · 达人核价模块原型（v1.1）</div>
+        <nav class="nav" id="nav"></nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="page active" id="page-search">
+        <div class="card">
+          <div class="title">1) 一键全导入达人列表</div>
+          <div class="subtitle">按会议纪要调整入口：删除原搜索选达人方式，改成由系统/代理/表格一次性导入达人名单，并支持导入时同步带入达人报价。</div>
+
+          <div class="summary-strip">
+            <div class="summary-item">入口模式<strong>名单导入后直接核价</strong></div>
+            <div class="summary-item">报价处理<strong>导入时同步回填达人报价</strong></div>
+            <div class="summary-item">批量策略<strong>规则全量初判 + AI按需深挖</strong></div>
+            <div class="summary-item">主要用户<strong>投放、采购、商务、管理者</strong></div>
+          </div>
+
+          <div class="section import-grid">
+            <div>
+              <div class="row">
+                <div class="label">导入来源<span class="required-mark">*</span></div>
+                <div class="chips" data-group="importSource" data-single="true">
+                  <span class="chip active" data-value="系统达人池">系统达人池</span>
+                  <span class="chip" data-value="代理名单">代理名单</span>
+                  <span class="chip" data-value="Excel模板">Excel模板</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">报价导入方式<span class="required-mark">*</span></div>
+                <div class="chips" data-group="quoteMode" data-single="true">
+                  <span class="chip active" data-value="同步报价">同步导入达人报价</span>
+                  <span class="chip" data-value="仅导入名单">仅导入名单</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">批量导入内容<span class="required-mark">*</span></div>
+                <div>
+                  <textarea id="importList" class="textarea-lg" placeholder="支持粘贴达人昵称、平台、行业、粉丝量级、达人报价等字段；一行一位达人。">阿左测评,抖音,3C数码,50-100万,42000
+成分研究社,小红书,美妆护肤,10-50万,26000
+老周家电帮,抖音,家电,100万+,68000
+职场林小姐,微博,教育职场,50-100万,31000
+小城宝妈记,小红书,母婴,10-50万,18000
+吃货阿鲲,抖音,食品饮料,50-100万,28000</textarea>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="panel-title">导入任务参数</div>
+              <div class="grid-2">
+                <div>
+                  <div class="field-caption">Campaign / 项目</div>
+                  <input id="campaignName" value="618 预热投放" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">代理 / 提报方</div>
+                  <input id="agency" value="星河代理" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">投放档期</div>
+                  <input id="schedule" value="2026-05-10 至 2026-05-20" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">通知邮箱</div>
+                  <input id="email" value="pricing@shushuo.com" placeholder="核价完成通知邮箱" />
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="panel-title">导入预览</div>
+                <div class="stat-list">
+                  <div class="stat-item">识别达人数量<strong id="importCount">6 位</strong></div>
+                  <div class="stat-item">同步导入报价<strong id="importQuoteCount">6 位</strong></div>
+                  <div class="stat-item">默认进入核价方式<strong>导入后统一确认并批量发起</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section panel-grid">
+            <div class="mini-note">本页不再承担搜索选人职责，只负责承接上游已筛好的达人名单。符合真实业务里“先有候选池，再统一核价”的使用方式。</div>
+            <div class="mini-note">若导入名单里已带达人报价，下一页会自动回填，无需手动逐个录入；仅当导入缺失字段时才需要补充。</div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="resetSearch">恢复示例</button>
+            <button class="btn">下载导入模板</button>
+            <button class="btn primary" id="goCandidate">一键全导入达人列表</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-candidate">
+        <div class="card">
+          <div class="title">2) 导入达人确认页</div>
+          <div class="subtitle">在同一页完成“导入确认 + 字段补齐 + 发起核价”。保留原列表式操作体验，但入口已调整为导入后确认。</div>
+
+          <div class="grid-2" style="margin-bottom:10px;">
+            <input id="quickFilter" placeholder="筛选达人昵称/行业" />
+            <div class="chips" data-group="candidatePlatform" data-single="true">
+              <span class="chip active" data-value="全部">全部平台</span>
+              <span class="chip" data-value="抖音">抖音</span>
+              <span class="chip" data-value="小红书">小红书</span>
+              <span class="chip" data-value="微博">微博</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div>
+              <div class="panel-title">批量核价公共参数<span class="title-inline-note">（导入时已同步填写）</span></div>
+              <div class="grid-2">
+                <div>
+                  <div class="field-caption">备注<span class="optional-mark">（非必填）</span></div>
+                  <input id="batchRemark" value="优先处理高偏离与高预算达人" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div class="mini-note" style="margin:0;">当前导入方式：名单已回填达人报价，可直接核价；若个别达人报价异常，可在列表中局部修正。</div>
+              </div>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" /></th>
+                <th>达人</th><th>平台</th><th>粉丝量级</th><th>行业</th><th>最近成交价</th><th>导入报价<span class="required-mark">必填</span></th><th>合作形式<span class="required-mark">必填</span></th><th>内容类型<span class="required-mark">必填</span></th><th>历史核价</th><th>风险状态</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="candidateBody"></tbody>
+          </table>
+
+          <div class="actions">
+            <span class="muted" id="selectedCount">已选 0 位达人</span>
+            <button class="btn" id="backSearch">返回导入页</button>
+            <button class="btn primary" id="launchPricing" disabled>发起核价</button>
+          </div>
+
+          <div class="footer-note">说明：该页用于确认“哪些导入达人进入核价”并补齐必要字段；其中“导入报价”“合作形式”“内容类型”会直接参与本期核价分析。完整 AI 推导依据与图表统一下沉至详情页展示。</div>
+        </div>
+      </section>
+
+      <section class="page" id="page-batch">
+        <div class="card">
+          <div class="title">3) 批量核价结果列表页</div>
+          <div class="subtitle" id="batchMeta">批次信息：-</div>
+
+          <div class="kpi-grid" style="margin-bottom:12px;">
+            <div class="kpi"><div class="muted">总达人数</div><div class="num" id="kpiTotal">0</div></div>
+            <div class="kpi"><div class="muted">规则初判已完成</div><div class="num" id="kpiRule">0</div></div>
+            <div class="kpi"><div class="muted">AI深度分析完成</div><div class="num" id="kpiAI">0</div></div>
+            <div class="kpi"><div class="muted">偏高待议价</div><div class="num" id="kpiHigh">0</div></div>
+          </div>
+
+          <div class="progress-shell"><span id="batchProgress"></span></div>
+          <div class="subtitle" id="batchProgressText">AI 分析进度：0%</div>
+
+          <div class="panel-grid" style="margin-bottom:14px;">
+            <div class="mini-note" id="batchParams">公共参数：-</div>
+            <div class="mini-note">列表默认按偏离比例降序，优先暴露高价项和待人工处理项。AI 未完成时不阻塞人工先看规则初判，符合会议纪要中“先完成单点功能”的原则。</div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>达人</th><th>提报价</th><th>历史均价(3m)</th><th>市场均价</th><th>偏离比例</th><th>规则初判</th><th>AI分析状态</th><th>AI建议区间</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="batchBody"></tbody>
+          </table>
+
+          <div class="actions">
+            <button class="btn" id="backCandidate">返回候选列表</button>
+            <button class="btn">导出核价报告</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-detail">
+        <div class="card">
+          <div class="title">4) 达人详情页（单达人核价详情）</div>
+          <div class="subtitle" id="detailSubtitle">重构为“顶部结论 + 可视化参考维度 + 合作补充信息”的新层级，减少纯文字内容。</div>
+
+          <div class="state-banner pending hidden" id="prePricingBanner">
+            <strong>该达人尚未发起核价</strong>
+            <span>当前页面仅展示达人基础画像、风险联动状态和核价准备信息。填写提报价、合作形式、内容类型后发起核价，系统才会生成价格结论、AI 建议价和历史趋势分析。</span>
+          </div>
+
+          <div class="detail-header">
+            <div class="kpi-grid">
+              <div class="kpi"><div class="muted">达人</div><div class="num" id="dName" style="font-size:18px;">-</div></div>
+              <div class="kpi"><div class="muted">平台 / 赛道</div><div class="num" id="dBase" style="font-size:18px;">-</div></div>
+              <div class="kpi"><div class="muted">本次提报价</div><div class="num" id="dQuote" style="font-size:18px;">-</div></div>
+              <div class="kpi"><div class="muted">样本量 / 历史三单</div><div class="num" id="dSample" style="font-size:18px;">-</div></div>
+            </div>
+            <div class="decision-banner">
+              <div class="muted" id="decisionLabel">AI 建议价</div>
+              <strong id="dDecision">-</strong>
+            </div>
+          </div>
+
+          <div class="detail-summary" id="detailSummary">
+            <div class="decision-summary">
+              <div class="muted">顶部结论</div>
+              <span class="price" id="suggestedPrice">-</span>
+              <div id="coreConclusion" class="muted">-</div>
+            </div>
+            <div class="mini-kpi-grid">
+              <div class="metric-card">
+                <div class="muted">价格同比</div>
+                <span class="num" id="yoyMetric">-</span>
+              </div>
+              <div class="metric-card">
+                <div class="muted">价格环比</div>
+                <span class="num" id="momMetric">-</span>
+              </div>
+              <div class="metric-card">
+                <div class="muted">粉丝趋势</div>
+                <span class="num" id="fansTrendLabel">-</span>
+              </div>
+              <div class="metric-card">
+                <div class="muted">三单表现</div>
+                <span class="num" id="performanceLabel">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="detailPreContent" class="hidden">
+          <div class="prep-grid">
+            <div>
+              <div class="card">
+                <div class="panel-title">达人基础信息</div>
+                <div class="list-info" id="preBasicInfo"></div>
+              </div>
+              <div class="card">
+                <div class="panel-title">合作准备信息</div>
+                <div class="list-info" id="preTaskInfo"></div>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <div class="panel-title">风险评估联动</div>
+                <div id="preRiskInfo"></div>
+              </div>
+              <div class="card">
+                <div class="panel-title">历史核价记录</div>
+                <div class="empty-box" id="preHistoryInfo"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="viz-grid hidden" id="detailEvaluatedContent">
+          <div class="viz-stack">
+            <div class="card">
+              <div class="panel-title">达人历史报价趋势（近6个月）</div>
+              <svg class="trend" id="trendSvg" viewBox="0 0 520 180" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="card">
+              <div class="panel-title">粉丝量级趋势（近6个月）</div>
+              <svg class="trend" id="fansTrendSvg" viewBox="0 0 520 180" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="card">
+              <div class="panel-title">价格同比 / 环比</div>
+              <div class="delta-grid">
+                <div class="delta-box up">
+                  <div class="muted">同比</div>
+                  <strong id="yoyValue">-</strong>
+                  <div class="muted" id="yoyText">-</div>
+                </div>
+                <div class="delta-box" id="momBox">
+                  <div class="muted">环比</div>
+                  <strong id="momValue">-</strong>
+                  <div class="muted" id="momText">-</div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="panel-title">审核动作</div>
+              <div class="audit-grid">
+                <div>
+                  <div class="field-caption">审核结论</div>
+                  <select id="auditDecision">
+                    <option>建议通过</option>
+                    <option selected>建议议价后通过</option>
+                    <option>建议驳回</option>
+                    <option>数据不足，需人工判断</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="field-caption">建议成交价</div>
+                  <input id="auditPrice" />
+                </div>
+                <div>
+                  <div class="field-caption">审核意见</div>
+                  <textarea id="auditComment" rows="3">建议以同行业同粉丝量级均价为锚点，结合近三单表现控制谈判区间；如需额外排他权益需单独核增预算。</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="viz-stack">
+            <div class="card">
+              <div class="panel-title">同行业同粉丝量级价格对比</div>
+              <div class="bars" id="distBars"></div>
+            </div>
+            <div class="card">
+              <div class="panel-title">历史三单表现</div>
+              <div class="perf-grid" id="performanceBars"></div>
+            </div>
+            <div class="card">
+              <div class="panel-title">达人合作补充信息</div>
+              <div class="list-info" id="cooperationInfo"></div>
+            </div>
+            <div class="card">
+              <div class="panel-title">投放风险摘要</div>
+              <div id="riskList"></div>
+            </div>
+            <div class="card">
+              <div class="panel-title">历史合作记录</div>
+              <div id="historyList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="actions">
+            <button class="btn" id="backFromDetail">返回上页</button>
+            <button class="btn" id="detailSaveBtn">保存核价单</button>
+            <button class="btn primary" id="detailPrimaryBtn">提交审核结论</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+const pages = [
+  { id: 'page-search', name: '导入达人' },
+  { id: 'page-candidate', name: '导入确认' },
+  { id: 'page-batch', name: '批量核价结果' },
+  { id: 'page-detail', name: '达人详情' }
+];
+
+const creators = [
+  { id: 1, name: '阿左测评', platform: '抖音', fans: '50-100万', industry: '3C数码', accountType: 'KOL', persona: '理性测评', latestContent: '家电/数码开箱', riskStatus: '风险评估已通过', recentPrice: 42000, risk: '低风险', historyStatus: '已核价', avg3m: 36000, marketAvg: 34000, sampleSize: 18, trend: [32000,33000,35000,36000,38000,42000], fansTrend: [52,55,58,61,64,68], yoy: 18, mom: 9, performance: { interaction: 86, delivery: 91, conversion: 74 }, historyRecords: [{ date: '2026-03-18', quotedPrice: 39000, decision: '建议议价后通过', range: '¥31,500 - ¥35,200', reviewer: '采购一组', summary: '报价较市场均价偏高 18%，建议压价后合作。' }] },
+  { id: 2, name: '成分研究社', platform: '小红书', fans: '10-50万', industry: '美妆护肤', accountType: 'KOL', persona: '成分党科普', latestContent: '精华成分对比', riskStatus: '风险评估已通过', recentPrice: 26000, risk: '中风险', historyStatus: '未核价', avg3m: 21000, marketAvg: 22000, sampleSize: 12, trend: [18000,19000,21000,22000,24000,26000], fansTrend: [18,19,21,22,23,24], yoy: 11, mom: 4, performance: { interaction: 82, delivery: 88, conversion: 77 }, historyRecords: [] },
+  { id: 3, name: '老周家电帮', platform: '抖音', fans: '100万+', industry: '家电', accountType: 'KOL', persona: '耐用品导购', latestContent: '空调横评', riskStatus: '风险评估已通过', recentPrice: 68000, risk: '低风险', historyStatus: '已核价', avg3m: 60000, marketAvg: 57000, sampleSize: 21, trend: [54000,56000,59000,61000,65000,68000], fansTrend: [101,104,108,113,118,125], yoy: 22, mom: 13, performance: { interaction: 79, delivery: 90, conversion: 84 }, historyRecords: [{ date: '2026-02-26', quotedPrice: 62000, decision: '建议通过', range: '¥55,000 - ¥58,500', reviewer: '商务二组', summary: '报价基本落在合理区间，建议直接推进。' }] },
+  { id: 4, name: '职场林小姐', platform: '微博', fans: '50-100万', industry: '教育职场', accountType: 'KOL', persona: '职场提升', latestContent: '求职面试技巧', riskStatus: '风险评估已通过', recentPrice: 31000, risk: '低风险', historyStatus: '已核价', avg3m: 30500, marketAvg: 29000, sampleSize: 9, trend: [28000,30000,29500,30500,31200,31000], fansTrend: [57,58,58,59,60,60], yoy: 5, mom: -3, performance: { interaction: 73, delivery: 93, conversion: 70 }, historyRecords: [{ date: '2026-01-12', quotedPrice: 29800, decision: '建议通过', range: '¥27,000 - ¥30,000', reviewer: '投放运营组', summary: '历史提报价与同类账号均价接近，可正常合作。' }] },
+  { id: 5, name: '小城宝妈记', platform: '小红书', fans: '10-50万', industry: '母婴', accountType: 'KOL', persona: '真实育儿分享', latestContent: '辅食记录/带娃日常', riskStatus: '风险评估待复核', recentPrice: 18000, risk: '高风险', historyStatus: '未核价', avg3m: 17000, marketAvg: 15500, sampleSize: 7, trend: [14000,14500,15500,16000,17000,18000], fansTrend: [12,13,14,15,16,17], yoy: 7, mom: 2, performance: { interaction: 69, delivery: 82, conversion: 65 }, historyRecords: [] },
+  { id: 6, name: '吃货阿鲲', platform: '抖音', fans: '50-100万', industry: '食品饮料', accountType: 'KOL', persona: '平价美食推荐', latestContent: '零食测评', riskStatus: '风险评估已通过', recentPrice: 28000, risk: '低风险', historyStatus: '已核价', avg3m: 25000, marketAvg: 24500, sampleSize: 15, trend: [22000,23000,24000,25500,27000,28000], fansTrend: [50,52,54,56,58,60], yoy: 9, mom: 6, performance: { interaction: 88, delivery: 89, conversion: 73 }, historyRecords: [{ date: '2026-03-03', quotedPrice: 26500, decision: '建议通过', range: '¥23,000 - ¥25,500', reviewer: '食品行业组', summary: '价格略高但在可接受范围内，建议控制附加权益成本。' }] }
+];
+
+const cooperationTypes = ['短视频定制', '直播带货', '图文种草'];
+const contentTypes = ['单条投放', '组合投放', '直播切片'];
+
+let state = {
+  page: 'page-search',
+  filtered: [...creators],
+  selected: new Set(),
+  batchRows: [],
+  fromPage: 'page-candidate',
+  detailCreator: null,
+  searchPlatform: '全部',
+  creatorInputs: {},
+  detailMode: 'evaluated',
+  historyDetailCreator: null
+};
+
+function mountNav() {
+  const nav = document.getElementById('nav');
+  nav.innerHTML = pages.map(p => `<button data-go="${p.id}">${p.name}</button>`).join('');
+  nav.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-go]');
+    if (!btn) return;
+    showPage(btn.dataset.go);
+  });
+}
+
+function showPage(id) {
+  state.page = id;
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === id));
+  document.querySelectorAll('.nav button').forEach(btn => btn.classList.toggle('active', btn.dataset.go === id));
+}
+
+function bindChips() {
+  document.querySelectorAll('.chips').forEach(group => {
+    group.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      const single = group.dataset.single === 'true';
+      if (single) {
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      } else {
+        chip.classList.toggle('active');
+      }
+      if (group.dataset.group === 'candidatePlatform') renderCandidateRows();
+      if (group.dataset.group === 'platform') state.searchPlatform = chip.dataset.value;
+      if (group.dataset.group === 'quoteMode') syncImportedQuotes(chip.dataset.value === '同步报价');
+    });
+  });
+}
+
+function priceTag(v){ return '¥' + v.toLocaleString(); }
+
+function riskTagText(risk) {
+  if (risk.includes('高')) return '<span class="tag bad">高风险</span>';
+  if (risk.includes('中')) return '<span class="tag warn">中风险</span>';
+  return '<span class="tag ok">低风险</span>';
+}
+
+function renderCandidateRows() {
+  const keyword = document.getElementById('quickFilter').value.trim();
+  const platformChip = document.querySelector('[data-group="candidatePlatform"] .chip.active');
+  const platform = platformChip ? platformChip.dataset.value : '全部';
+  state.filtered = creators.filter(c => {
+    const hitKeyword = !keyword || c.name.includes(keyword) || c.industry.includes(keyword);
+    const hitPlatform = platform === '全部' || c.platform === platform;
+    return hitKeyword && hitPlatform;
+  });
+
+  const body = document.getElementById('candidateBody');
+  body.innerHTML = state.filtered.map(c => {
+    const checked = state.selected.has(c.id) ? 'checked' : '';
+    const creatorInput = getCreatorInput(c.id);
+    return `<tr>
+      <td><input type="checkbox" data-id="${c.id}" ${checked} /></td>
+      <td><strong>${c.name}</strong><div class="muted">ID: K${String(c.id).padStart(4,'0')}</div></td>
+      <td>${c.platform}</td>
+      <td>${c.fans}</td>
+      <td>${c.industry}</td>
+      <td>${priceTag(c.recentPrice)}</td>
+      <td class="inline-field"><input class="table-input" data-field="quote" data-id="${c.id}" value="${creatorInput.quote}" placeholder="输入提报价" /></td>
+      <td class="inline-field">
+        <select class="table-select" data-field="coopType" data-id="${c.id}">
+          ${cooperationTypes.map(type => `<option value="${type}" ${creatorInput.coopType === type ? 'selected' : ''}>${type}</option>`).join('')}
+        </select>
+      </td>
+      <td class="inline-field">
+        <select class="table-select" data-field="contentType" data-id="${c.id}">
+          ${contentTypes.map(type => `<option value="${type}" ${creatorInput.contentType === type ? 'selected' : ''}>${type}</option>`).join('')}
+        </select>
+      </td>
+      <td><span class="tag">${c.historyStatus}</span></td>
+      <td>${riskTagText(c.risk)}</td>
+      <td><div class="table-ops"><button class="btn" data-open="${c.id}">查看详情</button></div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('importCount').textContent = `${creators.length} 位`;
+  document.getElementById('importQuoteCount').textContent = `${creators.filter(c => Number(String(getCreatorInput(c.id).quote).replace(/,/g, '')) > 0).length} 位`;
+  updateSelectionUI();
+}
+
+function updateSelectionUI() {
+  const count = state.selected.size;
+  document.getElementById('selectedCount').textContent = `已选 ${count} 位达人`;
+  const launchButton = document.getElementById('launchPricing');
+  const hasValidInputs = Array.from(state.selected).every(validateCreatorInput);
+  launchButton.disabled = count < 1 || !hasValidInputs;
+  launchButton.textContent = count <= 1 ? '发起核价' : `发起批量核价（${count}）`;
+}
+
+function makeBatchRows(ids) {
+  return creators.filter(c => ids.includes(c.id)).map(c => {
+    const creatorInput = getCreatorInput(c.id);
+    const quotedPrice = Number(String(creatorInput.quote).replace(/,/g, '')) || c.recentPrice;
+    const deviation = Math.round((quotedPrice - c.marketAvg) / c.marketAvg * 100);
+    const precheck = deviation > 15 ? '偏高' : deviation < -10 ? '偏低' : '合理';
+    return {
+      ...c,
+      quotedPrice,
+      coopType: creatorInput.coopType,
+      contentType: creatorInput.contentType,
+      deviation,
+      precheck,
+      aiStatus: (deviation > 15 || c.recentPrice > 50000) ? '分析中' : '已完成',
+      aiRange: (deviation > 15) ? '-' : `${priceTag(Math.round(c.marketAvg*0.95))} - ${priceTag(Math.round(c.marketAvg*1.05))}`
+    };
+  }).sort((a, b) => b.deviation - a.deviation);
+}
+
+function renderBatchRows() {
+  const body = document.getElementById('batchBody');
+  body.innerHTML = state.batchRows.map(row => {
+    const aiBadge = row.aiStatus === '分析中'
+      ? `<span class="status-pulse"></span><span class="tag warn">分析中</span>`
+      : `<span class="tag ok">已完成</span>`;
+    const preTag = row.precheck === '偏高' ? 'bad' : row.precheck === '偏低' ? 'warn' : 'ok';
+
+    return `<tr>
+      <td><strong>${row.name}</strong><div class="muted">${row.platform} · ${row.industry}</div></td>
+      <td>${priceTag(row.quotedPrice || row.recentPrice)}</td>
+      <td>${priceTag(row.avg3m)}</td>
+      <td>${priceTag(row.marketAvg)}</td>
+      <td>${row.deviation > 0 ? '+' : ''}${row.deviation}%</td>
+      <td><span class="tag ${preTag}">${row.precheck}</span></td>
+      <td>${aiBadge}</td>
+      <td>${row.aiRange}</td>
+      <td><button class="btn" data-open-detail="${row.id}">查看详情</button></td>
+    </tr>`;
+  }).join('');
+
+  const aiDone = state.batchRows.filter(r => r.aiStatus === '已完成').length;
+  const high = state.batchRows.filter(r => r.precheck === '偏高').length;
+  document.getElementById('kpiTotal').textContent = state.batchRows.length;
+  document.getElementById('kpiRule').textContent = state.batchRows.length;
+  document.getElementById('kpiAI').textContent = aiDone;
+  document.getElementById('kpiHigh').textContent = high;
+  const progress = state.batchRows.length ? Math.round(aiDone / state.batchRows.length * 100) : 0;
+  document.getElementById('batchProgress').style.width = `${progress}%`;
+  document.getElementById('batchProgressText').textContent = `AI 分析进度：${progress}%`;
+}
+
+function getCreatorInput(id) {
+  if (!state.creatorInputs[id]) {
+    const creator = creators.find(item => item.id === id);
+    state.creatorInputs[id] = {
+      quote: String(creator.recentPrice),
+      coopType: cooperationTypes[0],
+      contentType: contentTypes[0]
+    };
+  }
+  return state.creatorInputs[id];
+}
+
+function syncImportedQuotes(enabled) {
+  creators.forEach(creator => {
+    const input = getCreatorInput(creator.id);
+    input.quote = enabled ? String(creator.recentPrice) : '';
+  });
+  document.getElementById('importQuoteCount').textContent = enabled ? `${creators.length} 位` : '0 位';
+  renderCandidateRows();
+}
+
+function validateCreatorInput(id) {
+  const creatorInput = getCreatorInput(id);
+  const quote = Number(String(creatorInput.quote).replace(/,/g, '').trim());
+  return quote > 0 && Boolean(creatorInput.coopType) && Boolean(creatorInput.contentType);
+}
+
+function setDetailMode(mode) {
+  state.detailMode = mode;
+  const preMode = mode === 'pre';
+  document.getElementById('prePricingBanner').classList.toggle('hidden', !preMode);
+  document.getElementById('detailPreContent').classList.toggle('hidden', !preMode);
+  document.getElementById('detailEvaluatedContent').classList.toggle('hidden', preMode);
+  document.getElementById('detailSummary').classList.toggle('hidden', preMode);
+  document.getElementById('detailSubtitle').textContent = preMode
+    ? '未发起核价前，展示达人基础画像、风险联动状态和核价准备信息；价格结论需在发起核价后生成。'
+    : '顶部展示 AI 建议价和核心结论，中部拆分为价格趋势、粉丝趋势、同比环比、行业对标和三单表现等可视化模块。';
+  document.getElementById('decisionLabel').textContent = preMode ? '当前状态' : 'AI 建议价';
+  document.getElementById('detailSaveBtn').classList.toggle('hidden', preMode);
+  document.getElementById('detailPrimaryBtn').textContent = preMode ? '填写信息并发起核价' : '提交审核结论';
+}
+
+function renderPreDetail(c) {
+  state.detailCreator = c;
+  setDetailMode('pre');
+  const creatorInput = getCreatorInput(c.id);
+  const quote = Number(String(creatorInput.quote).replace(/,/g, ''));
+  document.getElementById('dName').textContent = c.name;
+  document.getElementById('dBase').textContent = `${c.platform} / ${c.industry}`;
+  document.getElementById('dQuote').textContent = quote > 0 ? priceTag(quote) : '待填写';
+  document.getElementById('dSample').textContent = `${c.sampleSize} / ${Math.min(3, Math.max(1, c.historyRecords.length || 1))} 单`;
+  document.getElementById('dDecision').textContent = '待发起核价';
+
+  document.getElementById('preBasicInfo').innerHTML = [
+    ['账号类型', c.accountType],
+    ['达人画像', c.persona],
+    ['粉丝量级', c.fans],
+    ['近期内容方向', c.latestContent]
+  ].map(([label, value]) => `<div class="list-info-item"><span class="muted">${label}</span><strong>${value}</strong></div>`).join('');
+
+  document.getElementById('preTaskInfo').innerHTML = [
+    ['提报价', quote > 0 ? priceTag(quote) : '候选页未填写'],
+    ['合作形式', creatorInput.coopType || '候选页未填写'],
+    ['内容类型', creatorInput.contentType || '候选页未填写'],
+    ['代理/提报方', document.getElementById('agency').value || '未填写']
+  ].map(([label, value]) => `<div class="list-info-item"><span class="muted">${label}</span><strong>${value}</strong></div>`).join('');
+
+  document.getElementById('preRiskInfo').innerHTML = `
+    <div class="list-info">
+      <div class="list-info-item"><span class="muted">风险评估状态</span><strong>${c.riskStatus}</strong></div>
+      <div class="list-info-item"><span class="muted">当前风险标签</span><strong>${c.risk}</strong></div>
+      <div class="list-info-item"><span class="muted">发起建议</span><strong>${c.risk === '高风险' ? '建议先完成风险复核，再决定是否发起核价。' : '可继续补充合作信息并发起核价。'}</strong></div>
+    </div>
+  `;
+
+  if (c.historyRecords && c.historyRecords.length) {
+    const latest = c.historyRecords[0];
+    document.getElementById('preHistoryInfo').innerHTML = `
+      <div class="list-info">
+        <div class="list-info-item"><span class="muted">最近一次核价时间</span><strong>${latest.date}</strong></div>
+        <div class="list-info-item"><span class="muted">历史核价结论</span><strong>${latest.decision}</strong></div>
+        <div class="list-info-item"><span class="muted">历史建议区间</span><strong>${latest.range}</strong></div>
+        <div class="list-info-item"><span class="muted">概览摘要</span><strong>${latest.summary}</strong></div>
+      </div>
+      <div class="actions" style="justify-content:flex-start;margin-top:12px;">
+        <button class="btn" id="openHistoryDetail">查看历史核价详情</button>
+      </div>
+    `;
+  } else {
+    document.getElementById('preHistoryInfo').textContent = '该达人暂无历史核价结果。发起核价后，系统将在此沉淀历史记录摘要、建议价格区间和审核结论。';
+  }
+}
+
+function startAIBackfill() {
+  const waiting = state.batchRows.filter(r => r.aiStatus === '分析中');
+  if (!waiting.length) return;
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i >= waiting.length) {
+      clearInterval(timer);
+      return;
+    }
+    const row = waiting[i];
+    row.aiStatus = '已完成';
+    const lower = Math.round(row.marketAvg * 0.9);
+    const upper = Math.round(row.marketAvg * 1.03);
+    row.aiRange = `${priceTag(lower)} - ${priceTag(upper)}`;
+    renderBatchRows();
+    i += 1;
+  }, 900);
+}
+
+function renderDetail(c) {
+  state.detailCreator = c;
+  setDetailMode('evaluated');
+  const creatorInput = getCreatorInput(c.id);
+  const quotedPrice = Number(String(creatorInput.quote).replace(/,/g, '')) || c.recentPrice;
+  const suggestedPrice = Math.round(c.marketAvg * 0.97);
+  document.getElementById('dName').textContent = c.name;
+  document.getElementById('dBase').textContent = `${c.platform} / ${c.industry}`;
+  document.getElementById('dQuote').textContent = priceTag(quotedPrice);
+  document.getElementById('dSample').textContent = `${c.sampleSize} / ${Math.min(3, Math.max(1, c.historyRecords.length || 1))} 单`;
+
+  const deviationMarket = Math.round((quotedPrice - c.marketAvg) / c.marketAvg * 100);
+  const deviationHistory = Math.round((quotedPrice - c.avg3m) / c.avg3m * 100);
+  const decision = deviationMarket > 15 ? '建议议价后通过' : deviationMarket < -10 ? '价格偏低，需复核质量' : '建议通过';
+  document.getElementById('dDecision').textContent = priceTag(suggestedPrice);
+  document.getElementById('auditDecision').value = decision;
+  document.getElementById('auditPrice').value = priceTag(suggestedPrice);
+  document.getElementById('suggestedPrice').textContent = priceTag(suggestedPrice);
+  document.getElementById('yoyMetric').textContent = `${c.yoy > 0 ? '+' : ''}${c.yoy}%`;
+  document.getElementById('momMetric').textContent = `${c.mom > 0 ? '+' : ''}${c.mom}%`;
+  document.getElementById('fansTrendLabel').textContent = c.fansTrend[c.fansTrend.length - 1] > c.fansTrend[0] ? '持续增长' : '波动平稳';
+  document.getElementById('performanceLabel').textContent = `${Math.round((c.performance.interaction + c.performance.delivery + c.performance.conversion) / 3)}分`;
+
+  document.getElementById('coreConclusion').innerHTML = `当前提报价 <strong>${priceTag(quotedPrice)}</strong>，较同类市场均价 <strong>${priceTag(c.marketAvg)}</strong> ${deviationMarket > 0 ? '高出' : '低于'} <strong>${Math.abs(deviationMarket)}%</strong>；较近3个月历史均价 <strong>${priceTag(c.avg3m)}</strong> 偏离 <strong>${deviationHistory}%</strong>。建议目标谈判区间：<strong>${priceTag(Math.round(c.marketAvg*0.9))} - ${priceTag(Math.round(c.marketAvg*1.03))}</strong>。`;
+
+  const bars = [
+    { label: '该达人当前报价', value: quotedPrice },
+    { label: '同行业同量级均价', value: c.marketAvg },
+    { label: '同平台均价', value: Math.round(c.marketAvg * 0.96) },
+    { label: '本达人近6月均价', value: Math.round(c.trend.reduce((a,b)=>a+b,0)/c.trend.length) }
+  ];
+  const max = Math.max(...bars.map(b => b.value));
+  document.getElementById('distBars').innerHTML = bars.map(b => `
+    <div class="bar-item">
+      <div>${b.label}</div>
+      <div class="bar"><span style="width:${Math.max(10, Math.round(b.value/max*100))}%"></span></div>
+      <div>${priceTag(b.value)}</div>
+    </div>
+  `).join('');
+
+  const riskItems = [
+    '评论区近期出现“广告频次过高”反馈，需控制连续投放节奏。',
+    '历史合作中 1 次延期交付记录，建议在合同中明确延期赔付条款。',
+    '竞品近30天合作 2 次，若本次 campaign 强排他需额外确认。'
+  ];
+  document.getElementById('riskList').innerHTML = riskItems.map(t => `<div class="risk-item">${t}</div>`).join('');
+  document.getElementById('cooperationInfo').innerHTML = [
+    ['合作形式', creatorInput.coopType],
+    ['内容类型', creatorInput.contentType],
+    ['代理 / 提报方', document.getElementById('agency').value || '未填写'],
+    ['投放档期', document.getElementById('schedule').value || '未填写'],
+    ['达人画像', c.persona],
+    ['近期内容', c.latestContent]
+  ].map(([label, value]) => `<div class="list-info-item"><span class="muted">${label}</span><strong>${value}</strong></div>`).join('');
+  document.getElementById('historyList').innerHTML = c.historyRecords.length
+    ? c.historyRecords.map(item => `<div class="list-info-item"><span class="muted">${item.date} · ${item.decision}</span><strong>${priceTag(item.quotedPrice)} / ${item.range}</strong></div>`).join('')
+    : '<div class="empty-box">暂无历史合作记录，本次核价完成后将在此沉淀历史样本。</div>';
+  document.getElementById('performanceBars').innerHTML = [
+    { label: '互动表现', value: c.performance.interaction },
+    { label: '履约稳定', value: c.performance.delivery },
+    { label: '转化表现', value: c.performance.conversion }
+  ].map(item => `
+    <div class="perf-item">
+      <div>${item.label}</div>
+      <div class="bar"><span style="width:${item.value}%"></span></div>
+      <div>${item.value}</div>
+    </div>
+  `).join('');
+  document.getElementById('yoyValue').textContent = `${c.yoy > 0 ? '+' : ''}${c.yoy}%`;
+  document.getElementById('yoyText').textContent = '对比去年同期合作报价变化';
+  document.getElementById('momValue').textContent = `${c.mom > 0 ? '+' : ''}${c.mom}%`;
+  document.getElementById('momText').textContent = '对比上月报价变化';
+  document.getElementById('momBox').className = `delta-box ${c.mom > 0 ? 'up' : 'down'}`;
+  renderTrend(c.trend);
+  renderTrend(c.fansTrend, 'fansTrendSvg', '粉');
+}
+
+function renderHistoryDetail(c) {
+  if (!c.historyRecords || !c.historyRecords.length) return;
+  const latest = c.historyRecords[0];
+  renderDetail(c);
+  state.historyDetailCreator = c;
+  document.getElementById('detailSubtitle').textContent = '以下内容为该达人最近一次历史核价详情，用于回溯历史判断依据；本次核价仍需基于当前任务重新发起。';
+  document.getElementById('decisionLabel').textContent = '历史建议价';
+  document.getElementById('dQuote').textContent = priceTag(latest.quotedPrice);
+  document.getElementById('dDecision').textContent = latest.range;
+  document.getElementById('suggestedPrice').textContent = latest.range;
+  document.getElementById('coreConclusion').innerHTML = `最近一次历史核价发生于 <strong>${latest.date}</strong>，当时报价 <strong>${priceTag(latest.quotedPrice)}</strong>，历史建议区间为 <strong>${latest.range}</strong>。历史审核摘要：<strong>${latest.summary}</strong>`;
+}
+
+function renderTrend(list, targetId = 'trendSvg', unit = '') {
+  const svg = document.getElementById(targetId);
+  const w = 520, h = 180;
+  const min = Math.min(...list) * 0.9;
+  const max = Math.max(...list) * 1.05;
+  const stepX = w / (list.length - 1);
+  const points = list.map((v, i) => {
+    const x = i * stepX;
+    const y = h - ((v - min) / (max - min)) * (h - 16) - 8;
+    return [x, y];
+  });
+  const poly = points.map(p => p.join(',')).join(' ');
+  const area = `0,${h} ${poly} ${w},${h}`;
+  const grid = [30, 75, 120, 165].map(y => `<line x1="0" y1="${y}" x2="${w}" y2="${y}" stroke="#ebeff8" stroke-width="1"/>`).join('');
+
+  const dots = points.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#5a62ff"></circle><text x="${p[0]-14}" y="${p[1]-8}" font-size="10" fill="#6b7399">${unit ? `${list[i]}${unit}` : `M${i+1}`}</text>`).join('');
+  svg.innerHTML = `
+    ${grid}
+    <polygon points="${area}" fill="rgba(90,98,255,0.12)"></polygon>
+    <polyline points="${poly}" fill="none" stroke="#5a62ff" stroke-width="2.2" />
+    ${dots}
+  `;
+}
+
+function initEvents() {
+  document.getElementById('goCandidate').addEventListener('click', () => {
+    document.getElementById('quickFilter').value = '';
+    state.selected = new Set(creators.map(item => item.id));
+    document.querySelectorAll('[data-group="candidatePlatform"] .chip').forEach((ch, idx) => {
+      ch.classList.toggle('active', idx === 0);
+    });
+    renderCandidateRows();
+    updateSelectionUI();
+    showPage('page-candidate');
+  });
+
+  document.getElementById('resetSearch').addEventListener('click', () => {
+    document.getElementById('importList').value = `阿左测评,抖音,3C数码,50-100万,42000
+成分研究社,小红书,美妆护肤,10-50万,26000
+老周家电帮,抖音,家电,100万+,68000
+职场林小姐,微博,教育职场,50-100万,31000
+小城宝妈记,小红书,母婴,10-50万,18000
+吃货阿鲲,抖音,食品饮料,50-100万,28000`;
+    document.querySelectorAll('#page-search input').forEach(i => {
+      if (i.id === 'campaignName') i.value = '618 预热投放';
+      else if (i.id === 'agency') i.value = '星河代理';
+      else if (i.id === 'schedule') i.value = '2026-05-10 至 2026-05-20';
+      else if (i.id === 'email') i.value = 'pricing@shushuo.com';
+    });
+    document.querySelectorAll('#page-search .chips').forEach(g => {
+      g.querySelectorAll('.chip').forEach((c, idx) => c.classList.toggle('active', idx === 0));
+    });
+    syncImportedQuotes(true);
+  });
+
+  document.getElementById('quickFilter').addEventListener('input', renderCandidateRows);
+
+  document.getElementById('candidateBody').addEventListener('change', (e) => {
+    const box = e.target.closest('input[type="checkbox"][data-id]');
+    if (box) {
+      const id = Number(box.dataset.id);
+      if (box.checked) state.selected.add(id);
+      else state.selected.delete(id);
+      updateSelectionUI();
+      return;
+    }
+    const field = e.target.closest('[data-field][data-id]');
+    if (!field) return;
+    const id = Number(field.dataset.id);
+    const creatorInput = getCreatorInput(id);
+    creatorInput[field.dataset.field] = field.value;
+    updateSelectionUI();
+  });
+
+  document.getElementById('candidateBody').addEventListener('input', (e) => {
+    const field = e.target.closest('[data-field="quote"][data-id]');
+    if (!field) return;
+    const id = Number(field.dataset.id);
+    const creatorInput = getCreatorInput(id);
+    creatorInput.quote = field.value.replace(/[^\d,]/g, '');
+    updateSelectionUI();
+  });
+
+  document.getElementById('selectAll').addEventListener('change', (e) => {
+    if (e.target.checked) state.filtered.forEach(c => state.selected.add(c.id));
+    else state.filtered.forEach(c => state.selected.delete(c.id));
+    renderCandidateRows();
+  });
+
+  document.getElementById('candidateBody').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-open]');
+    if (!btn) return;
+    const c = creators.find(x => x.id === Number(btn.dataset.open));
+    state.fromPage = 'page-candidate';
+    renderPreDetail(c);
+    showPage('page-detail');
+  });
+
+  document.getElementById('launchPricing').addEventListener('click', () => {
+    const ids = Array.from(state.selected);
+    if (ids.length === 1) {
+      const c = creators.find(x => x.id === ids[0]);
+      state.fromPage = 'page-candidate';
+      c.historyStatus = '已核价';
+      renderDetail(c);
+      showPage('page-detail');
+      return;
+    }
+    state.batchRows = makeBatchRows(ids);
+    document.getElementById('batchParams').textContent = `公共参数：${document.getElementById('schedule').value} / ${document.getElementById('agency').value} / ${document.getElementById('campaignName').value} / ${document.getElementById('batchRemark').value}`;
+    document.getElementById('batchMeta').textContent = `批次信息：Batch-${Date.now().toString().slice(-6)} · 共 ${ids.length} 位达人 · 规则初判已出，AI深度分析回填中`; 
+    renderBatchRows();
+    showPage('page-batch');
+    startAIBackfill();
+  });
+
+  document.getElementById('batchBody').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-open-detail]');
+    if (!btn) return;
+    const c = creators.find(x => x.id === Number(btn.dataset.openDetail));
+    state.fromPage = 'page-batch';
+    renderDetail(c);
+    showPage('page-detail');
+  });
+
+  document.getElementById('backSearch').addEventListener('click', () => showPage('page-search'));
+  document.getElementById('backCandidate').addEventListener('click', () => showPage('page-candidate'));
+  document.getElementById('backFromDetail').addEventListener('click', () => showPage(state.fromPage));
+  document.getElementById('preHistoryInfo').addEventListener('click', (e) => {
+    const btn = e.target.closest('#openHistoryDetail');
+    if (!btn || !state.detailCreator) return;
+    renderHistoryDetail(state.detailCreator);
+  });
+  document.getElementById('detailPrimaryBtn').addEventListener('click', () => {
+    if (state.detailMode !== 'pre' || !state.detailCreator) return;
+    state.detailCreator.historyStatus = '已核价';
+    renderDetail(state.detailCreator);
+  });
+}
+
+mountNav();
+bindChips();
+initEvents();
+renderCandidateRows();
+</script>
+</body>
+</html>

@@ -573,10 +573,137 @@
       gap: 12px;
     }
 
+    .import-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 12px;
+    }
+
+    .textarea-lg {
+      min-height: 156px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .stat-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stat-item {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      font-size: 13px;
+    }
+
+    .stat-item strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .detail-summary {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .decision-summary {
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f6f8ff 0%, #fff 100%);
+      border: 1px solid var(--line);
+    }
+
+    .decision-summary .price {
+      display: block;
+      margin: 8px 0 10px;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric-card {
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+    }
+
+    .metric-card .num {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .viz-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px;
+    }
+
+    .viz-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .delta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .delta-box {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      font-size: 13px;
+    }
+
+    .delta-box strong {
+      display: block;
+      margin: 6px 0 4px;
+      font-size: 24px;
+    }
+
+    .delta-box.up strong { color: var(--bad); }
+    .delta-box.down strong { color: var(--ok); }
+
+    .perf-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .perf-item {
+      display: grid;
+      grid-template-columns: 96px 1fr 56px;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .mini-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     @media (max-width: 980px) {
-      .grid-2, .two-col, .kpi-grid, .panel-grid, .summary-strip, .audit-grid, .hero-grid, .hero-stats, .prep-grid { grid-template-columns: 1fr; }
+      .grid-2, .two-col, .kpi-grid, .panel-grid, .summary-strip, .audit-grid, .hero-grid, .hero-stats, .prep-grid, .import-grid, .detail-summary, .metric-strip, .viz-grid, .delta-grid, .mini-kpi-grid { grid-template-columns: 1fr; }
       .row { grid-template-columns: 1fr; }
-      .bar-item { grid-template-columns: 1fr; }
+      .bar-item, .perf-item { grid-template-columns: 1fr; }
       .detail-header { grid-template-columns: 1fr; }
       .hero h1 { font-size: 28px; }
     }
@@ -594,109 +721,95 @@
     <main class="container">
       <section class="page active" id="page-search">
         <div class="card">
-          <div class="title">1) 用户搜索达人页面</div>
-          <div class="subtitle">参考 PRD 与会议纪要，按“先选人再核价”流程设计。搜索条件布局参考你提供的示意图。</div>
+          <div class="title">1) 一键全导入达人列表</div>
+          <div class="subtitle">按会议纪要调整入口：删除原搜索选达人方式，改成由系统/代理/表格一次性导入达人名单，并支持导入时同步带入达人报价。</div>
 
           <div class="summary-strip">
-            <div class="summary-item">模块定位<strong>风险评估后的价格审核环节</strong></div>
-            <div class="summary-item">关键价值<strong>提供可解释的核价结论</strong></div>
+            <div class="summary-item">入口模式<strong>名单导入后直接核价</strong></div>
+            <div class="summary-item">报价处理<strong>导入时同步回填达人报价</strong></div>
             <div class="summary-item">批量策略<strong>规则全量初判 + AI按需深挖</strong></div>
             <div class="summary-item">主要用户<strong>投放、采购、商务、管理者</strong></div>
           </div>
 
-          <div class="section">
-            <div class="row">
-              <div class="label">账号信息 / 投放平台<span class="required-mark">*</span></div>
-              <div class="chips" data-group="platform" data-single="true">
-                <span class="chip active" data-value="抖音">抖音</span>
-                <span class="chip" data-value="小红书">小红书</span>
-                <span class="chip" data-value="微博">微博</span>
-                <span class="chip" data-value="微信">微信</span>
-                <span class="chip" data-value="快手">快手</span>
+          <div class="section import-grid">
+            <div>
+              <div class="row">
+                <div class="label">导入来源<span class="required-mark">*</span></div>
+                <div class="chips" data-group="importSource" data-single="true">
+                  <span class="chip active" data-value="系统达人池">系统达人池</span>
+                  <span class="chip" data-value="代理名单">代理名单</span>
+                  <span class="chip" data-value="Excel模板">Excel模板</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">报价导入方式<span class="required-mark">*</span></div>
+                <div class="chips" data-group="quoteMode" data-single="true">
+                  <span class="chip active" data-value="同步报价">同步导入达人报价</span>
+                  <span class="chip" data-value="仅导入名单">仅导入名单</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">批量导入内容<span class="required-mark">*</span></div>
+                <div>
+                  <textarea id="importList" class="textarea-lg" placeholder="支持粘贴达人昵称、平台、行业、粉丝量级、达人报价等字段；一行一位达人。">阿左测评,抖音,3C数码,50-100万,42000
+成分研究社,小红书,美妆护肤,10-50万,26000
+老周家电帮,抖音,家电,100万+,68000
+职场林小姐,微博,教育职场,50-100万,31000
+小城宝妈记,小红书,母婴,10-50万,18000
+吃货阿鲲,抖音,食品饮料,50-100万,28000</textarea>
+                </div>
               </div>
             </div>
-            <div class="row">
-              <div class="label">达人类型<span class="required-mark">*</span></div>
-              <div class="chips" data-group="kolType" data-single="true">
-                <span class="chip active" data-value="KOL">KOL</span>
-                <span class="chip" data-value="KOC">KOC</span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="label">输入达人<span class="required-mark">*</span></div>
-              <div class="grid-2">
-                <input id="keyword" placeholder="输入达人昵称 / ID / 链接" />
-                <input id="selectedInput" placeholder="已选达人（可粘贴多个，逗号分隔）" />
-              </div>
-            </div>
-          </div>
 
-          <div class="section">
-            <div class="row">
-              <div class="label">目标粉丝年龄</div>
-              <div class="chips" data-group="age" data-single="true">
-                <span class="chip active" data-value="不限">不限</span>
-                <span class="chip" data-value="18-23">18-23</span>
-                <span class="chip" data-value="24-30">24-30</span>
-                <span class="chip" data-value="31-40">31-40</span>
-                <span class="chip" data-value="41-50">41-50</span>
-                <span class="chip" data-value="50+">50+</span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="label">目标粉丝性别</div>
-              <div class="chips" data-group="gender" data-single="true">
-                <span class="chip active" data-value="不限">不限</span>
-                <span class="chip" data-value="女性<30%">女性 &lt; 30%</span>
-                <span class="chip" data-value="30-50%">30% - 50%</span>
-                <span class="chip" data-value="50-70%">50% - 70%</span>
-                <span class="chip" data-value=">70%">女性 &gt; 70%</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="row">
-              <div class="label">目标达人人设</div>
+            <div>
+              <div class="panel-title">导入任务参数</div>
               <div class="grid-2">
-                <input id="persona" placeholder="例如：理性测评、成分党、实用派宝妈" />
-                <input id="track" placeholder="行业/赛道：美妆、3C、食品等" />
+                <div>
+                  <div class="field-caption">Campaign / 项目</div>
+                  <input id="campaignName" value="618 预热投放" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">代理 / 提报方</div>
+                  <input id="agency" value="星河代理" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">投放档期</div>
+                  <input id="schedule" value="2026-05-10 至 2026-05-20" placeholder="仅用于记录或导出，不参与本期分析" />
+                </div>
+                <div>
+                  <div class="field-caption">通知邮箱</div>
+                  <input id="email" value="pricing@shushuo.com" placeholder="核价完成通知邮箱" />
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="label">规避竞品</div>
-              <div><input id="avoid" placeholder="多个品牌可用 Enter 或逗号分隔" /></div>
-            </div>
-            <div class="row">
-              <div class="label">通知邮箱</div>
-              <div><input id="email" placeholder="核价完成通知邮箱" /></div>
-            </div>
-            <div class="row">
-              <div class="label">风险评估联动</div>
-              <div class="chips" data-group="riskOn" data-single="true">
-                <span class="chip active" data-value="开启">开启</span>
-                <span class="chip" data-value="关闭">关闭</span>
+
+              <div class="section">
+                <div class="panel-title">导入预览</div>
+                <div class="stat-list">
+                  <div class="stat-item">识别达人数量<strong id="importCount">6 位</strong></div>
+                  <div class="stat-item">同步导入报价<strong id="importQuoteCount">6 位</strong></div>
+                  <div class="stat-item">默认进入核价方式<strong>导入后统一确认并批量发起</strong></div>
+                </div>
               </div>
             </div>
           </div>
 
           <div class="section panel-grid">
-            <div class="mini-note">建议把“搜索条件”与“批量核价公共参数”拆开。搜索页负责找人，公共参数在发起批量核价时补录，避免筛选阶段认知负担过重。</div>
-            <div class="mini-note">会议纪要强调模块化优先，因此这版原型把核价作为独立模块呈现，但保留“风险评估联动开关”和后续回写的接口感。</div>
+            <div class="mini-note">本页不再承担搜索选人职责，只负责承接上游已筛好的达人名单。符合真实业务里“先有候选池，再统一核价”的使用方式。</div>
+            <div class="mini-note">若导入名单里已带达人报价，下一页会自动回填，无需手动逐个录入；仅当导入缺失字段时才需要补充。</div>
           </div>
 
           <div class="actions">
-            <button class="btn" id="resetSearch">重置</button>
-            <button class="btn">保存方案</button>
-            <button class="btn primary" id="goCandidate">搜索达人</button>
+            <button class="btn" id="resetSearch">恢复示例</button>
+            <button class="btn">下载导入模板</button>
+            <button class="btn primary" id="goCandidate">一键全导入达人列表</button>
           </div>
         </div>
       </section>
 
       <section class="page" id="page-candidate">
         <div class="card">
-          <div class="title">2) 候选达人列表页</div>
-          <div class="subtitle">在同一页完成“选人 + 录入合作信息 + 发起核价”。单达人与批量达人共用一个发起入口，系统根据勾选数量决定后续流向。</div>
+          <div class="title">2) 导入达人确认页</div>
+          <div class="subtitle">在同一页完成“导入确认 + 字段补齐 + 发起核价”。保留原列表式操作体验，但入口已调整为导入后确认。</div>
 
           <div class="grid-2" style="margin-bottom:10px;">
             <input id="quickFilter" placeholder="筛选达人昵称/行业" />
@@ -710,24 +823,13 @@
 
           <div class="section">
             <div>
-              <div class="panel-title">批量核价公共参数<span class="title-inline-note">（可导出表单）</span></div>
+              <div class="panel-title">批量核价公共参数<span class="title-inline-note">（导入时已同步填写）</span></div>
               <div class="grid-2">
-                <div>
-                  <div class="field-caption">Campaign / 项目<span class="optional-mark">（非必填）</span></div>
-                  <input id="campaignName" value="618 预热投放" placeholder="仅用于记录或导出，不参与本期分析" />
-                </div>
-                <div>
-                  <div class="field-caption">代理 / 提报方<span class="optional-mark">（非必填）</span></div>
-                  <input id="agency" value="星河代理" placeholder="仅用于记录或导出，不参与本期分析" />
-                </div>
-                <div>
-                  <div class="field-caption">投放档期<span class="optional-mark">（非必填）</span></div>
-                  <input id="schedule" value="2026-05-10 至 2026-05-20" placeholder="仅用于记录或导出，不参与本期分析" />
-                </div>
                 <div>
                   <div class="field-caption">备注<span class="optional-mark">（非必填）</span></div>
                   <input id="batchRemark" value="优先处理高偏离与高预算达人" placeholder="仅用于记录或导出，不参与本期分析" />
                 </div>
+                <div class="mini-note" style="margin:0;">当前导入方式：名单已回填达人报价，可直接核价；若个别达人报价异常，可在列表中局部修正。</div>
               </div>
             </div>
           </div>
@@ -736,7 +838,7 @@
             <thead>
               <tr>
                 <th><input type="checkbox" id="selectAll" /></th>
-                <th>达人</th><th>平台</th><th>粉丝量级</th><th>行业</th><th>最近成交价</th><th>提报价<span class="required-mark">必填</span></th><th>合作形式<span class="required-mark">必填</span></th><th>内容类型<span class="required-mark">必填</span></th><th>历史核价</th><th>风险状态</th><th>操作</th>
+                <th>达人</th><th>平台</th><th>粉丝量级</th><th>行业</th><th>最近成交价</th><th>导入报价<span class="required-mark">必填</span></th><th>合作形式<span class="required-mark">必填</span></th><th>内容类型<span class="required-mark">必填</span></th><th>历史核价</th><th>风险状态</th><th>操作</th>
               </tr>
             </thead>
             <tbody id="candidateBody"></tbody>
@@ -744,11 +846,11 @@
 
           <div class="actions">
             <span class="muted" id="selectedCount">已选 0 位达人</span>
-            <button class="btn" id="backSearch">返回搜索</button>
+            <button class="btn" id="backSearch">返回导入页</button>
             <button class="btn primary" id="launchPricing" disabled>发起核价</button>
           </div>
 
-          <div class="footer-note">说明：候选页用于确认“谁进入核价”并补齐达人级合作信息；其中“提报价”“合作形式”“内容类型”会直接参与本期核价分析，属于必填项。完整 AI 解释、趋势图和审核动作统一下沉至详情页或批量结果页。顶部“批量核价公共参数”当前仅用于任务记录和导出展示，不参与本期核价分析计算。</div>
+          <div class="footer-note">说明：该页用于确认“哪些导入达人进入核价”并补齐必要字段；其中“导入报价”“合作形式”“内容类型”会直接参与本期核价分析。完整 AI 推导依据与图表统一下沉至详情页展示。</div>
         </div>
       </section>
 
@@ -775,7 +877,7 @@
           <table>
             <thead>
               <tr>
-                <th>达人</th><th>提报价</th><th>历史均价(3m)</th><th>市场均价</th><th>偏离比例</th><th>规则初判</th><th>AI分析状态</th><th>AI建议区间</th><th>置信度</th><th>操作</th>
+                <th>达人</th><th>提报价</th><th>历史均价(3m)</th><th>市场均价</th><th>偏离比例</th><th>规则初判</th><th>AI分析状态</th><th>AI建议区间</th><th>操作</th>
               </tr>
             </thead>
             <tbody id="batchBody"></tbody>
@@ -791,7 +893,7 @@
       <section class="page" id="page-detail">
         <div class="card">
           <div class="title">4) 达人详情页（单达人核价详情）</div>
-          <div class="subtitle" id="detailSubtitle">包含：基础信息、报价对比结论、AI分析、同类账号价格分布对比（平均值）、历史报价趋势、投放风险摘要、相似达人推荐。</div>
+          <div class="subtitle" id="detailSubtitle">重构为“顶部结论 + 可视化参考维度 + 合作补充信息”的新层级，减少纯文字内容。</div>
 
           <div class="state-banner pending hidden" id="prePricingBanner">
             <strong>该达人尚未发起核价</strong>
@@ -803,11 +905,37 @@
               <div class="kpi"><div class="muted">达人</div><div class="num" id="dName" style="font-size:18px;">-</div></div>
               <div class="kpi"><div class="muted">平台 / 赛道</div><div class="num" id="dBase" style="font-size:18px;">-</div></div>
               <div class="kpi"><div class="muted">本次提报价</div><div class="num" id="dQuote" style="font-size:18px;">-</div></div>
-              <div class="kpi"><div class="muted">样本量 / 置信度</div><div class="num" id="dSample" style="font-size:18px;">-</div></div>
+              <div class="kpi"><div class="muted">样本量 / 历史三单</div><div class="num" id="dSample" style="font-size:18px;">-</div></div>
             </div>
             <div class="decision-banner">
-              <div class="muted" id="decisionLabel">最终建议</div>
+              <div class="muted" id="decisionLabel">AI 建议价</div>
               <strong id="dDecision">-</strong>
+            </div>
+          </div>
+
+          <div class="detail-summary" id="detailSummary">
+            <div class="decision-summary">
+              <div class="muted">顶部结论</div>
+              <span class="price" id="suggestedPrice">-</span>
+              <div id="coreConclusion" class="muted">-</div>
+            </div>
+            <div class="mini-kpi-grid">
+              <div class="metric-card">
+                <div class="muted">价格同比</div>
+                <span class="num" id="yoyMetric">-</span>
+              </div>
+              <div class="metric-card">
+                <div class="muted">价格环比</div>
+                <span class="num" id="momMetric">-</span>
+              </div>
+              <div class="metric-card">
+                <div class="muted">粉丝趋势</div>
+                <span class="num" id="fansTrendLabel">-</span>
+              </div>
+              <div class="metric-card">
+                <div class="muted">三单表现</div>
+                <span class="num" id="performanceLabel">-</span>
+              </div>
             </div>
           </div>
         </div>
@@ -837,19 +965,30 @@
           </div>
         </div>
 
-        <div class="two-col" id="detailEvaluatedContent">
-          <div>
-            <div class="card">
-              <div class="panel-title">报价对比核心结论</div>
-              <div id="coreConclusion" class="muted">-</div>
-            </div>
-            <div class="card">
-              <div class="panel-title">AI 分析</div>
-              <div id="aiText" class="muted">-</div>
-            </div>
+        <div class="viz-grid hidden" id="detailEvaluatedContent">
+          <div class="viz-stack">
             <div class="card">
               <div class="panel-title">达人历史报价趋势（近6个月）</div>
               <svg class="trend" id="trendSvg" viewBox="0 0 520 180" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="card">
+              <div class="panel-title">粉丝量级趋势（近6个月）</div>
+              <svg class="trend" id="fansTrendSvg" viewBox="0 0 520 180" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="card">
+              <div class="panel-title">价格同比 / 环比</div>
+              <div class="delta-grid">
+                <div class="delta-box up">
+                  <div class="muted">同比</div>
+                  <strong id="yoyValue">-</strong>
+                  <div class="muted" id="yoyText">-</div>
+                </div>
+                <div class="delta-box" id="momBox">
+                  <div class="muted">环比</div>
+                  <strong id="momValue">-</strong>
+                  <div class="muted" id="momText">-</div>
+                </div>
+              </div>
             </div>
             <div class="card">
               <div class="panel-title">审核动作</div>
@@ -869,27 +1008,32 @@
                 </div>
                 <div>
                   <div class="field-caption">审核意见</div>
-                  <textarea id="auditComment" rows="3">建议以历史均价和同量级均价为锚点，优先压价 8%-12%，如需加排他权益需单独核增预算。</textarea>
+                  <textarea id="auditComment" rows="3">建议以同行业同粉丝量级均价为锚点，结合近三单表现控制谈判区间；如需额外排他权益需单独核增预算。</textarea>
                 </div>
               </div>
             </div>
           </div>
 
-          <div>
+          <div class="viz-stack">
             <div class="card">
-              <div class="panel-title">同类型账号价格分布对比（平均值）</div>
+              <div class="panel-title">同行业同粉丝量级价格对比</div>
               <div class="bars" id="distBars"></div>
+            </div>
+            <div class="card">
+              <div class="panel-title">历史三单表现</div>
+              <div class="perf-grid" id="performanceBars"></div>
+            </div>
+            <div class="card">
+              <div class="panel-title">达人合作补充信息</div>
+              <div class="list-info" id="cooperationInfo"></div>
             </div>
             <div class="card">
               <div class="panel-title">投放风险摘要</div>
               <div id="riskList"></div>
             </div>
             <div class="card">
-              <div class="panel-title">相似达人对比推荐</div>
-              <table>
-                <thead><tr><th>达人</th><th>平台</th><th>粉丝量级</th><th>均价</th><th>建议</th></tr></thead>
-                <tbody id="similarBody"></tbody>
-              </table>
+              <div class="panel-title">历史合作记录</div>
+              <div id="historyList"></div>
             </div>
           </div>
         </div>
@@ -907,19 +1051,19 @@
 
 <script>
 const pages = [
-  { id: 'page-search', name: '搜索达人' },
-  { id: 'page-candidate', name: '候选达人列表' },
+  { id: 'page-search', name: '导入达人' },
+  { id: 'page-candidate', name: '导入确认' },
   { id: 'page-batch', name: '批量核价结果' },
   { id: 'page-detail', name: '达人详情' }
 ];
 
 const creators = [
-  { id: 1, name: '阿左测评', platform: '抖音', fans: '50-100万', industry: '3C数码', accountType: 'KOL', persona: '理性测评', latestContent: '家电/数码开箱', riskStatus: '风险评估已通过', recentPrice: 42000, risk: '低风险', historyStatus: '已核价', avg3m: 36000, marketAvg: 34000, sampleSize: 18, confidence: 0.84, trend: [32000,33000,35000,36000,38000,42000], historyRecords: [{ date: '2026-03-18', quotedPrice: 39000, decision: '建议议价后通过', range: '¥31,500 - ¥35,200', reviewer: '采购一组', summary: '报价较市场均价偏高 18%，建议压价后合作。' }] },
-  { id: 2, name: '成分研究社', platform: '小红书', fans: '10-50万', industry: '美妆护肤', accountType: 'KOL', persona: '成分党科普', latestContent: '精华成分对比', riskStatus: '风险评估已通过', recentPrice: 26000, risk: '中风险', historyStatus: '未核价', avg3m: 21000, marketAvg: 22000, sampleSize: 12, confidence: 0.76, trend: [18000,19000,21000,22000,24000,26000], historyRecords: [] },
-  { id: 3, name: '老周家电帮', platform: '抖音', fans: '100万+', industry: '家电', accountType: 'KOL', persona: '耐用品导购', latestContent: '空调横评', riskStatus: '风险评估已通过', recentPrice: 68000, risk: '低风险', historyStatus: '已核价', avg3m: 60000, marketAvg: 57000, sampleSize: 21, confidence: 0.88, trend: [54000,56000,59000,61000,65000,68000], historyRecords: [{ date: '2026-02-26', quotedPrice: 62000, decision: '建议通过', range: '¥55,000 - ¥58,500', reviewer: '商务二组', summary: '报价基本落在合理区间，建议直接推进。' }] },
-  { id: 4, name: '职场林小姐', platform: '微博', fans: '50-100万', industry: '教育职场', accountType: 'KOL', persona: '职场提升', latestContent: '求职面试技巧', riskStatus: '风险评估已通过', recentPrice: 31000, risk: '低风险', historyStatus: '已核价', avg3m: 30500, marketAvg: 29000, sampleSize: 9, confidence: 0.71, trend: [28000,30000,29500,30500,31200,31000], historyRecords: [{ date: '2026-01-12', quotedPrice: 29800, decision: '建议通过', range: '¥27,000 - ¥30,000', reviewer: '投放运营组', summary: '历史提报价与同类账号均价接近，可正常合作。' }] },
-  { id: 5, name: '小城宝妈记', platform: '小红书', fans: '10-50万', industry: '母婴', accountType: 'KOL', persona: '真实育儿分享', latestContent: '辅食记录/带娃日常', riskStatus: '风险评估待复核', recentPrice: 18000, risk: '高风险', historyStatus: '未核价', avg3m: 17000, marketAvg: 15500, sampleSize: 7, confidence: 0.63, trend: [14000,14500,15500,16000,17000,18000], historyRecords: [] },
-  { id: 6, name: '吃货阿鲲', platform: '抖音', fans: '50-100万', industry: '食品饮料', accountType: 'KOL', persona: '平价美食推荐', latestContent: '零食测评', riskStatus: '风险评估已通过', recentPrice: 28000, risk: '低风险', historyStatus: '已核价', avg3m: 25000, marketAvg: 24500, sampleSize: 15, confidence: 0.79, trend: [22000,23000,24000,25500,27000,28000], historyRecords: [{ date: '2026-03-03', quotedPrice: 26500, decision: '建议通过', range: '¥23,000 - ¥25,500', reviewer: '食品行业组', summary: '价格略高但在可接受范围内，建议控制附加权益成本。' }] }
+  { id: 1, name: '阿左测评', platform: '抖音', fans: '50-100万', industry: '3C数码', accountType: 'KOL', persona: '理性测评', latestContent: '家电/数码开箱', riskStatus: '风险评估已通过', recentPrice: 42000, risk: '低风险', historyStatus: '已核价', avg3m: 36000, marketAvg: 34000, sampleSize: 18, trend: [32000,33000,35000,36000,38000,42000], fansTrend: [52,55,58,61,64,68], yoy: 18, mom: 9, performance: { interaction: 86, delivery: 91, conversion: 74 }, historyRecords: [{ date: '2026-03-18', quotedPrice: 39000, decision: '建议议价后通过', range: '¥31,500 - ¥35,200', reviewer: '采购一组', summary: '报价较市场均价偏高 18%，建议压价后合作。' }] },
+  { id: 2, name: '成分研究社', platform: '小红书', fans: '10-50万', industry: '美妆护肤', accountType: 'KOL', persona: '成分党科普', latestContent: '精华成分对比', riskStatus: '风险评估已通过', recentPrice: 26000, risk: '中风险', historyStatus: '未核价', avg3m: 21000, marketAvg: 22000, sampleSize: 12, trend: [18000,19000,21000,22000,24000,26000], fansTrend: [18,19,21,22,23,24], yoy: 11, mom: 4, performance: { interaction: 82, delivery: 88, conversion: 77 }, historyRecords: [] },
+  { id: 3, name: '老周家电帮', platform: '抖音', fans: '100万+', industry: '家电', accountType: 'KOL', persona: '耐用品导购', latestContent: '空调横评', riskStatus: '风险评估已通过', recentPrice: 68000, risk: '低风险', historyStatus: '已核价', avg3m: 60000, marketAvg: 57000, sampleSize: 21, trend: [54000,56000,59000,61000,65000,68000], fansTrend: [101,104,108,113,118,125], yoy: 22, mom: 13, performance: { interaction: 79, delivery: 90, conversion: 84 }, historyRecords: [{ date: '2026-02-26', quotedPrice: 62000, decision: '建议通过', range: '¥55,000 - ¥58,500', reviewer: '商务二组', summary: '报价基本落在合理区间，建议直接推进。' }] },
+  { id: 4, name: '职场林小姐', platform: '微博', fans: '50-100万', industry: '教育职场', accountType: 'KOL', persona: '职场提升', latestContent: '求职面试技巧', riskStatus: '风险评估已通过', recentPrice: 31000, risk: '低风险', historyStatus: '已核价', avg3m: 30500, marketAvg: 29000, sampleSize: 9, trend: [28000,30000,29500,30500,31200,31000], fansTrend: [57,58,58,59,60,60], yoy: 5, mom: -3, performance: { interaction: 73, delivery: 93, conversion: 70 }, historyRecords: [{ date: '2026-01-12', quotedPrice: 29800, decision: '建议通过', range: '¥27,000 - ¥30,000', reviewer: '投放运营组', summary: '历史提报价与同类账号均价接近，可正常合作。' }] },
+  { id: 5, name: '小城宝妈记', platform: '小红书', fans: '10-50万', industry: '母婴', accountType: 'KOL', persona: '真实育儿分享', latestContent: '辅食记录/带娃日常', riskStatus: '风险评估待复核', recentPrice: 18000, risk: '高风险', historyStatus: '未核价', avg3m: 17000, marketAvg: 15500, sampleSize: 7, trend: [14000,14500,15500,16000,17000,18000], fansTrend: [12,13,14,15,16,17], yoy: 7, mom: 2, performance: { interaction: 69, delivery: 82, conversion: 65 }, historyRecords: [] },
+  { id: 6, name: '吃货阿鲲', platform: '抖音', fans: '50-100万', industry: '食品饮料', accountType: 'KOL', persona: '平价美食推荐', latestContent: '零食测评', riskStatus: '风险评估已通过', recentPrice: 28000, risk: '低风险', historyStatus: '已核价', avg3m: 25000, marketAvg: 24500, sampleSize: 15, trend: [22000,23000,24000,25500,27000,28000], fansTrend: [50,52,54,56,58,60], yoy: 9, mom: 6, performance: { interaction: 88, delivery: 89, conversion: 73 }, historyRecords: [{ date: '2026-03-03', quotedPrice: 26500, decision: '建议通过', range: '¥23,000 - ¥25,500', reviewer: '食品行业组', summary: '价格略高但在可接受范围内，建议控制附加权益成本。' }] }
 ];
 
 const cooperationTypes = ['短视频定制', '直播带货', '图文种草'];
@@ -932,7 +1076,7 @@ let state = {
   batchRows: [],
   fromPage: 'page-candidate',
   detailCreator: null,
-  searchPlatform: '抖音',
+  searchPlatform: '全部',
   creatorInputs: {},
   detailMode: 'evaluated',
   historyDetailCreator: null
@@ -968,6 +1112,7 @@ function bindChips() {
       }
       if (group.dataset.group === 'candidatePlatform') renderCandidateRows();
       if (group.dataset.group === 'platform') state.searchPlatform = chip.dataset.value;
+      if (group.dataset.group === 'quoteMode') syncImportedQuotes(chip.dataset.value === '同步报价');
     });
   });
 }
@@ -1017,6 +1162,8 @@ function renderCandidateRows() {
       <td><div class="table-ops"><button class="btn" data-open="${c.id}">查看详情</button></div></td>
     </tr>`;
   }).join('');
+  document.getElementById('importCount').textContent = `${creators.length} 位`;
+  document.getElementById('importQuoteCount').textContent = `${creators.filter(c => Number(String(getCreatorInput(c.id).quote).replace(/,/g, '')) > 0).length} 位`;
   updateSelectionUI();
 }
 
@@ -1065,7 +1212,6 @@ function renderBatchRows() {
       <td><span class="tag ${preTag}">${row.precheck}</span></td>
       <td>${aiBadge}</td>
       <td>${row.aiRange}</td>
-      <td>${Math.round(row.confidence * 100)}%</td>
       <td><button class="btn" data-open-detail="${row.id}">查看详情</button></td>
     </tr>`;
   }).join('');
@@ -1093,6 +1239,15 @@ function getCreatorInput(id) {
   return state.creatorInputs[id];
 }
 
+function syncImportedQuotes(enabled) {
+  creators.forEach(creator => {
+    const input = getCreatorInput(creator.id);
+    input.quote = enabled ? String(creator.recentPrice) : '';
+  });
+  document.getElementById('importQuoteCount').textContent = enabled ? `${creators.length} 位` : '0 位';
+  renderCandidateRows();
+}
+
 function validateCreatorInput(id) {
   const creatorInput = getCreatorInput(id);
   const quote = Number(String(creatorInput.quote).replace(/,/g, '').trim());
@@ -1105,10 +1260,11 @@ function setDetailMode(mode) {
   document.getElementById('prePricingBanner').classList.toggle('hidden', !preMode);
   document.getElementById('detailPreContent').classList.toggle('hidden', !preMode);
   document.getElementById('detailEvaluatedContent').classList.toggle('hidden', preMode);
+  document.getElementById('detailSummary').classList.toggle('hidden', preMode);
   document.getElementById('detailSubtitle').textContent = preMode
     ? '未发起核价前，展示达人基础画像、风险联动状态和核价准备信息；价格结论需在发起核价后生成。'
-    : '包含：基础信息、报价对比结论、AI分析、同类账号价格分布对比（平均值）、历史报价趋势、投放风险摘要、相似达人推荐。';
-  document.getElementById('decisionLabel').textContent = preMode ? '当前状态' : '最终建议';
+    : '顶部展示 AI 建议价和核心结论，中部拆分为价格趋势、粉丝趋势、同比环比、行业对标和三单表现等可视化模块。';
+  document.getElementById('decisionLabel').textContent = preMode ? '当前状态' : 'AI 建议价';
   document.getElementById('detailSaveBtn').classList.toggle('hidden', preMode);
   document.getElementById('detailPrimaryBtn').textContent = preMode ? '填写信息并发起核价' : '提交审核结论';
 }
@@ -1121,7 +1277,7 @@ function renderPreDetail(c) {
   document.getElementById('dName').textContent = c.name;
   document.getElementById('dBase').textContent = `${c.platform} / ${c.industry}`;
   document.getElementById('dQuote').textContent = quote > 0 ? priceTag(quote) : '待填写';
-  document.getElementById('dSample').textContent = `${c.sampleSize} / 待核价`;
+  document.getElementById('dSample').textContent = `${c.sampleSize} / ${Math.min(3, Math.max(1, c.historyRecords.length || 1))} 单`;
   document.getElementById('dDecision').textContent = '待发起核价';
 
   document.getElementById('preBasicInfo').innerHTML = [
@@ -1188,26 +1344,30 @@ function renderDetail(c) {
   setDetailMode('evaluated');
   const creatorInput = getCreatorInput(c.id);
   const quotedPrice = Number(String(creatorInput.quote).replace(/,/g, '')) || c.recentPrice;
+  const suggestedPrice = Math.round(c.marketAvg * 0.97);
   document.getElementById('dName').textContent = c.name;
   document.getElementById('dBase').textContent = `${c.platform} / ${c.industry}`;
   document.getElementById('dQuote').textContent = priceTag(quotedPrice);
-  document.getElementById('dSample').textContent = `${c.sampleSize} / ${Math.round(c.confidence * 100)}%`;
+  document.getElementById('dSample').textContent = `${c.sampleSize} / ${Math.min(3, Math.max(1, c.historyRecords.length || 1))} 单`;
 
   const deviationMarket = Math.round((quotedPrice - c.marketAvg) / c.marketAvg * 100);
   const deviationHistory = Math.round((quotedPrice - c.avg3m) / c.avg3m * 100);
   const decision = deviationMarket > 15 ? '建议议价后通过' : deviationMarket < -10 ? '价格偏低，需复核质量' : '建议通过';
-  document.getElementById('dDecision').textContent = decision;
+  document.getElementById('dDecision').textContent = priceTag(suggestedPrice);
   document.getElementById('auditDecision').value = decision;
-  document.getElementById('auditPrice').value = priceTag(Math.round(c.marketAvg * 0.97));
+  document.getElementById('auditPrice').value = priceTag(suggestedPrice);
+  document.getElementById('suggestedPrice').textContent = priceTag(suggestedPrice);
+  document.getElementById('yoyMetric').textContent = `${c.yoy > 0 ? '+' : ''}${c.yoy}%`;
+  document.getElementById('momMetric').textContent = `${c.mom > 0 ? '+' : ''}${c.mom}%`;
+  document.getElementById('fansTrendLabel').textContent = c.fansTrend[c.fansTrend.length - 1] > c.fansTrend[0] ? '持续增长' : '波动平稳';
+  document.getElementById('performanceLabel').textContent = `${Math.round((c.performance.interaction + c.performance.delivery + c.performance.conversion) / 3)}分`;
 
   document.getElementById('coreConclusion').innerHTML = `当前提报价 <strong>${priceTag(quotedPrice)}</strong>，较同类市场均价 <strong>${priceTag(c.marketAvg)}</strong> ${deviationMarket > 0 ? '高出' : '低于'} <strong>${Math.abs(deviationMarket)}%</strong>；较近3个月历史均价 <strong>${priceTag(c.avg3m)}</strong> 偏离 <strong>${deviationHistory}%</strong>。建议目标谈判区间：<strong>${priceTag(Math.round(c.marketAvg*0.9))} - ${priceTag(Math.round(c.marketAvg*1.03))}</strong>。`;
 
-  document.getElementById('aiText').textContent = `AI 综合判断：该达人在近2个月报价有持续抬升，主要由近期爆款内容带来议价权提升，但同赛道同量级账号成交价并未同步上涨。建议先以“历史成交均值+合理增长”作为锚点展开议价，可优先争取打包权益（短视频+直播切片）降低单次CPM。置信度：${deviationMarket > 20 ? '0.82' : '0.76'}。`;
-
   const bars = [
     { label: '该达人当前报价', value: quotedPrice },
-    { label: '同平台同量级均价', value: c.marketAvg },
-    { label: '同赛道均价', value: Math.round(c.marketAvg * 0.96) },
+    { label: '同行业同量级均价', value: c.marketAvg },
+    { label: '同平台均价', value: Math.round(c.marketAvg * 0.96) },
     { label: '本达人近6月均价', value: Math.round(c.trend.reduce((a,b)=>a+b,0)/c.trend.length) }
   ];
   const max = Math.max(...bars.map(b => b.value));
@@ -1225,14 +1385,35 @@ function renderDetail(c) {
     '竞品近30天合作 2 次，若本次 campaign 强排他需额外确认。'
   ];
   document.getElementById('riskList').innerHTML = riskItems.map(t => `<div class="risk-item">${t}</div>`).join('');
-
-  const sim = creators.filter(x => x.id !== c.id).filter(x => x.platform === c.platform || x.industry === c.industry).slice(0,3);
-  document.getElementById('similarBody').innerHTML = sim.map(s => {
-    const suggest = s.recentPrice < c.recentPrice ? '可作为替代优先' : '可作为谈判参照';
-    return `<tr><td>${s.name}</td><td>${s.platform}</td><td>${s.fans}</td><td>${priceTag(s.recentPrice)}</td><td>${suggest}</td></tr>`;
-  }).join('');
-
+  document.getElementById('cooperationInfo').innerHTML = [
+    ['合作形式', creatorInput.coopType],
+    ['内容类型', creatorInput.contentType],
+    ['代理 / 提报方', document.getElementById('agency').value || '未填写'],
+    ['投放档期', document.getElementById('schedule').value || '未填写'],
+    ['达人画像', c.persona],
+    ['近期内容', c.latestContent]
+  ].map(([label, value]) => `<div class="list-info-item"><span class="muted">${label}</span><strong>${value}</strong></div>`).join('');
+  document.getElementById('historyList').innerHTML = c.historyRecords.length
+    ? c.historyRecords.map(item => `<div class="list-info-item"><span class="muted">${item.date} · ${item.decision}</span><strong>${priceTag(item.quotedPrice)} / ${item.range}</strong></div>`).join('')
+    : '<div class="empty-box">暂无历史合作记录，本次核价完成后将在此沉淀历史样本。</div>';
+  document.getElementById('performanceBars').innerHTML = [
+    { label: '互动表现', value: c.performance.interaction },
+    { label: '履约稳定', value: c.performance.delivery },
+    { label: '转化表现', value: c.performance.conversion }
+  ].map(item => `
+    <div class="perf-item">
+      <div>${item.label}</div>
+      <div class="bar"><span style="width:${item.value}%"></span></div>
+      <div>${item.value}</div>
+    </div>
+  `).join('');
+  document.getElementById('yoyValue').textContent = `${c.yoy > 0 ? '+' : ''}${c.yoy}%`;
+  document.getElementById('yoyText').textContent = '对比去年同期合作报价变化';
+  document.getElementById('momValue').textContent = `${c.mom > 0 ? '+' : ''}${c.mom}%`;
+  document.getElementById('momText').textContent = '对比上月报价变化';
+  document.getElementById('momBox').className = `delta-box ${c.mom > 0 ? 'up' : 'down'}`;
   renderTrend(c.trend);
+  renderTrend(c.fansTrend, 'fansTrendSvg', '粉');
 }
 
 function renderHistoryDetail(c) {
@@ -1241,15 +1422,15 @@ function renderHistoryDetail(c) {
   renderDetail(c);
   state.historyDetailCreator = c;
   document.getElementById('detailSubtitle').textContent = '以下内容为该达人最近一次历史核价详情，用于回溯历史判断依据；本次核价仍需基于当前任务重新发起。';
-  document.getElementById('decisionLabel').textContent = '历史结论';
+  document.getElementById('decisionLabel').textContent = '历史建议价';
   document.getElementById('dQuote').textContent = priceTag(latest.quotedPrice);
-  document.getElementById('dDecision').textContent = latest.decision;
+  document.getElementById('dDecision').textContent = latest.range;
+  document.getElementById('suggestedPrice').textContent = latest.range;
   document.getElementById('coreConclusion').innerHTML = `最近一次历史核价发生于 <strong>${latest.date}</strong>，当时报价 <strong>${priceTag(latest.quotedPrice)}</strong>，历史建议区间为 <strong>${latest.range}</strong>。历史审核摘要：<strong>${latest.summary}</strong>`;
-  document.getElementById('aiText').textContent = `历史核价备注：由 ${latest.reviewer} 完成审核。该详情仅用于查看历史依据，不代表当前提报价的最新判断。`;
 }
 
-function renderTrend(list) {
-  const svg = document.getElementById('trendSvg');
+function renderTrend(list, targetId = 'trendSvg', unit = '') {
+  const svg = document.getElementById(targetId);
   const w = 520, h = 180;
   const min = Math.min(...list) * 0.9;
   const max = Math.max(...list) * 1.05;
@@ -1263,7 +1444,7 @@ function renderTrend(list) {
   const area = `0,${h} ${poly} ${w},${h}`;
   const grid = [30, 75, 120, 165].map(y => `<line x1="0" y1="${y}" x2="${w}" y2="${y}" stroke="#ebeff8" stroke-width="1"/>`).join('');
 
-  const dots = points.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#5a62ff"></circle><text x="${p[0]-14}" y="${p[1]-8}" font-size="10" fill="#6b7399">M${i+1}</text>`).join('');
+  const dots = points.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#5a62ff"></circle><text x="${p[0]-14}" y="${p[1]-8}" font-size="10" fill="#6b7399">${unit ? `${list[i]}${unit}` : `M${i+1}`}</text>`).join('');
   svg.innerHTML = `
     ${grid}
     <polygon points="${area}" fill="rgba(90,98,255,0.12)"></polygon>
@@ -1274,27 +1455,33 @@ function renderTrend(list) {
 
 function initEvents() {
   document.getElementById('goCandidate').addEventListener('click', () => {
-    const kw = document.getElementById('keyword').value.trim();
-    document.getElementById('quickFilter').value = kw;
-    const targetPlatform = state.searchPlatform;
-    state.selected.clear();
-    document.querySelectorAll('[data-group="candidatePlatform"] .chip').forEach(ch => {
-      ch.classList.toggle('active', ch.dataset.value === targetPlatform);
+    document.getElementById('quickFilter').value = '';
+    state.selected = new Set(creators.map(item => item.id));
+    document.querySelectorAll('[data-group="candidatePlatform"] .chip').forEach((ch, idx) => {
+      ch.classList.toggle('active', idx === 0);
     });
-    if (!document.querySelector('[data-group="candidatePlatform"] .chip.active')) {
-      document.querySelector('[data-group="candidatePlatform"] .chip').classList.add('active');
-    }
     renderCandidateRows();
     updateSelectionUI();
     showPage('page-candidate');
   });
 
   document.getElementById('resetSearch').addEventListener('click', () => {
-    document.querySelectorAll('#page-search input').forEach(i => i.value = '');
+    document.getElementById('importList').value = `阿左测评,抖音,3C数码,50-100万,42000
+成分研究社,小红书,美妆护肤,10-50万,26000
+老周家电帮,抖音,家电,100万+,68000
+职场林小姐,微博,教育职场,50-100万,31000
+小城宝妈记,小红书,母婴,10-50万,18000
+吃货阿鲲,抖音,食品饮料,50-100万,28000`;
+    document.querySelectorAll('#page-search input').forEach(i => {
+      if (i.id === 'campaignName') i.value = '618 预热投放';
+      else if (i.id === 'agency') i.value = '星河代理';
+      else if (i.id === 'schedule') i.value = '2026-05-10 至 2026-05-20';
+      else if (i.id === 'email') i.value = 'pricing@shushuo.com';
+    });
     document.querySelectorAll('#page-search .chips').forEach(g => {
       g.querySelectorAll('.chip').forEach((c, idx) => c.classList.toggle('active', idx === 0));
     });
-    state.searchPlatform = '抖音';
+    syncImportedQuotes(true);
   });
 
   document.getElementById('quickFilter').addEventListener('input', renderCandidateRows);
