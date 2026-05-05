@@ -5,7 +5,7 @@ import { buildBenchmark, createAiContext } from "../lib/benchmark";
 import { normalizeCreators, priceFor } from "../lib/normalize";
 import { useAppState } from "../state/AppState";
 import type { CampaignGoal, ContentFormat, PricingResult, PricingTaskRecord } from "../types";
-import { PageHeader, Stat, formatMoney, formatNumber, formatPercent } from "../ui/common";
+import { PageHeader, Stat, formatMoney, formatNumber, formatPercent, formatPercentFlexible } from "../ui/common";
 
 export function CreatorDetailPage() {
   const { uid = "" } = useParams();
@@ -181,7 +181,7 @@ function ResultSection({ task }: { task: PricingTaskRecord }) {
           <Stat label="当前报价" value={formatMoney(result.pricing_result.current_quote)} />
           <Stat label="建议成交价" value={formatMoney(result.pricing_result.suggested_price)} />
           <Stat label="建议区间" value={`${formatMoney(result.pricing_result.suggested_price_range.low)} - ${formatMoney(result.pricing_result.suggested_price_range.high)}`} />
-          <Stat label="报价偏差" value={formatPercent(result.pricing_result.quote_deviation_percent)} />
+          <Stat label="报价偏差" value={formatPercentFlexible(result.pricing_result.quote_deviation_percent)} />
           <Stat label="下一步" value={result.next_action} />
         </div>
       </section>

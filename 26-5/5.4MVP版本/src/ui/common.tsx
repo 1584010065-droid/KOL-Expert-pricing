@@ -45,3 +45,9 @@ export function formatPercent(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return `${Math.round(value * 1000) / 10}%`;
 }
+
+export function formatPercentFlexible(value: number | null | undefined) {
+  if (value === null || value === undefined || Number.isNaN(value)) return "-";
+  const normalized = Math.abs(value) > 1 ? value : value * 100;
+  return `${Math.round(normalized * 10) / 10}%`;
+}

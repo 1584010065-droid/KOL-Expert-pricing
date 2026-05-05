@@ -48,7 +48,7 @@ app.post("/api/price-check", async (req, res) => {
     });
 
     const text = completion.choices?.[0]?.message?.content ?? "";
-    const result = parseJson(text);
+    const result = normalizeModelResult(parseJson(text), context);
     res.json({ result, model, responseId: completion.id });
   } catch (error) {
     const message = error instanceof Error ? error.message : "模型调用失败";
@@ -100,7 +100,7 @@ const userPrompt = `请基于以下单达人核价上下文，完成一次达人
     "base_price": number | null,
     "suggested_price": number | null,
     "suggested_price_range": { "low": number | null, "high": number | null },
-    "quote_deviation_percent": number | null,
+    "quote_deviation_percent": number | null, // 使用小数比例，例如 0.2 表示 20%，不要输出 20
     "quote_position": string,
     "negotiation_space": number | null
   },
@@ -130,4 +130,24 @@ function parseJson(text) {
     if (!match) throw new Error("模型没有返回可解析 JSON。");
     return JSON.parse(match[0]);
   }
+}
+
+function normalizeModelResult(result, context) {
+  const pricing = result?.pricing_result;
+  const derived = context?.benchmark_context?.derived_pricing;
+  if (!pricing || !derived) return result;
+
+  pricing.current_quote = context?.task_info?.current_quote ?? pricing.current_quote;
+  pricing.base_price = derived.base_price ?? pricing.base_price;
+  pricing.quote_position = derived.quote_position ?? pricing.quote_position;
+
+  if (typeof pricing.quote_deviation_percent === "number" && Math.abs(pricing.quote_deviation_percent) > 1) {
+    pricing.quote_deviation_percent = Math.round((pricing.quote_deviation_percent / 100) * 10000) / 10000;
+  }
+
+  if (typeof derived.quote_deviation_percent === "number") {
+    pricing.quote_deviation_percent = derived.quote_deviation_percent;
+  }
+
+  return result;
 }
