@@ -1,4 +1,4 @@
-import { Bot, Clipboard, Download, Loader2 } from "lucide-react";
+import { Bot, Clipboard, Download, Loader2, User, Hash, BarChart3, TrendingUp, Award } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { buildBenchmark, createAiContext } from "../lib/benchmark";
@@ -6,6 +6,14 @@ import { normalizeCreators, priceFor } from "../lib/normalize";
 import { useAppState } from "../state/AppState";
 import type { CampaignGoal, ContentFormat, PricingResult, PricingTaskRecord } from "../types";
 import { PageHeader, Stat, formatMoney, formatNumber, formatPercent, formatPercentFlexible } from "../ui/common";
+import {
+  CreatorRadarChart,
+  BenchmarkPriceChart,
+  QuoteDeviationGauge,
+  SuggestedPriceRangeChart,
+  FactorScoreChart,
+  SampleSizeBadge,
+} from "../ui/charts";
 
 export function CreatorDetailPage() {
   const { uid = "" } = useParams();
@@ -86,15 +94,34 @@ export function CreatorDetailPage() {
       <section className="detail-grid">
         <div className="content-section">
           <div className="section-head"><h2>达人基础信息</h2></div>
-          <div className="profile-grid">
-            <Stat label="uid" value={<span className="mono">{selectedCreator.uid}</span>} />
-            <Stat label="账号类型" value={selectedCreator.level1AccountType.join("、") || "-"} />
-            <Stat label="粉丝数" value={formatNumber(selectedCreator.followers)} />
-            <Stat label="粉丝量级" value={selectedCreator.fanLevel} />
-            <Stat label="真粉率" value={formatPercent(selectedCreator.realFanRate)} />
-            <Stat label="平均互动量" value={formatNumber(selectedCreator.avgInteractions)} />
-            <Stat label="传播价值" value={formatNumber(selectedCreator.communicationValue)} />
-            <Stat label="转化价值" value={formatNumber(selectedCreator.conversionValue)} />
+          <div className="profile-viz-grid">
+            <div className="profile-meta">
+              <div className="meta-row">
+                <Hash size={14} className="meta-icon" />
+                <span className="mono">{selectedCreator.uid}</span>
+              </div>
+              <div className="meta-row">
+                <User size={14} className="meta-icon" />
+                <span>{selectedCreator.level1AccountType.join("、") || "-"}</span>
+              </div>
+              <div className="meta-row">
+                <Award size={14} className="meta-icon" />
+                <span>{selectedCreator.fanLevel}</span>
+              </div>
+              <div className="profile-quick-stats">
+                <div className="quick-stat">
+                  <TrendingUp size={14} />
+                  <strong>{formatNumber(selectedCreator.followers)}</strong>
+                  <span>粉丝</span>
+                </div>
+                <div className="quick-stat">
+                  <BarChart3 size={14} />
+                  <strong>{formatNumber(selectedCreator.avgInteractions)}</strong>
+                  <span>互动</span>
+                </div>
+              </div>
+            </div>
+            <CreatorRadarChart creator={selectedCreator} benchmark={benchmark} />
           </div>
         </div>
 
@@ -126,16 +153,17 @@ export function CreatorDetailPage() {
             <p>当前对标池基于本次上传 CSV，不代表全平台市场价格。</p>
           </div>
         </div>
-        <div className="stats-grid">
-          <Stat label="对标池层级" value={benchmark.level} />
-          <Stat label="样本量" value={benchmark.sampleSize} tone={benchmark.sampleSize < 10 ? "warn" : "good"} />
-          <Stat label="置信度" value={benchmark.confidence} />
-          <Stat label="市场位置" value={benchmark.quotePosition} />
-          <Stat label="均价" value={formatMoney(benchmark.priceAvg)} />
-          <Stat label="P25" value={formatMoney(benchmark.priceP25)} />
-          <Stat label="P50 / 基准价" value={formatMoney(benchmark.priceP50)} />
-          <Stat label="P75" value={formatMoney(benchmark.priceP75)} />
-          <Stat label="报价偏差" value={formatPercent(benchmark.quoteDeviationPercent)} />
+        <div className="benchmark-viz-grid">
+          <div className="benchmark-left">
+            <div className="benchmark-level-badge">
+              <span className="level-label">{benchmark.level}</span>
+            </div>
+            <SampleSizeBadge sampleSize={benchmark.sampleSize} confidence={benchmark.confidence} />
+            <QuoteDeviationGauge deviation={benchmark.quoteDeviationPercent} position={benchmark.quotePosition} />
+          </div>
+          <div className="benchmark-right">
+            <BenchmarkPriceChart benchmark={benchmark} />
+          </div>
         </div>
       </section>
 
@@ -176,18 +204,34 @@ function ResultSection({ task }: { task: PricingTaskRecord }) {
           </div>
           <button className="ghost-button" onClick={downloadJson}><Download size={16} />导出 JSON</button>
         </div>
-        <div className="stats-grid">
-          <Stat label="合理性判断" value={result.pricing_result.judgement} tone={toneFor(result.pricing_result.judgement_level)} />
-          <Stat label="当前报价" value={formatMoney(result.pricing_result.current_quote)} />
-          <Stat label="建议成交价" value={formatMoney(result.pricing_result.suggested_price)} />
-          <Stat label="建议区间" value={`${formatMoney(result.pricing_result.suggested_price_range.low)} - ${formatMoney(result.pricing_result.suggested_price_range.high)}`} />
-          <Stat label="报价偏差" value={formatPercentFlexible(result.pricing_result.quote_deviation_percent)} />
-          <Stat label="下一步" value={result.next_action} />
+        <div className="result-viz-grid">
+          <div className="result-judgement">
+            <Stat label="合理性判断" value={result.pricing_result.judgement} tone={toneFor(result.pricing_result.judgement_level)} />
+            <div className="judgement-badge" data-tone={toneFor(result.pricing_result.judgement_level)}>
+              {result.pricing_result.judgement}
+            </div>
+          </div>
+          <div className="result-price-chart">
+            <SuggestedPriceRangeChart
+              currentQuote={result.pricing_result.current_quote}
+              suggestedPrice={result.pricing_result.suggested_price}
+              rangeLow={result.pricing_result.suggested_price_range.low}
+              rangeHigh={result.pricing_result.suggested_price_range.high}
+            />
+          </div>
+          <div className="result-quick-stats">
+            <Stat label="当前报价" value={formatMoney(result.pricing_result.current_quote)} />
+            <Stat label="建议成交价" value={formatMoney(result.pricing_result.suggested_price)} />
+            <Stat label="建议区间" value={`${formatMoney(result.pricing_result.suggested_price_range.low)} - ${formatMoney(result.pricing_result.suggested_price_range.high)}`} />
+            <Stat label="报价偏差" value={formatPercentFlexible(result.pricing_result.quote_deviation_percent)} />
+            <Stat label="下一步" value={result.next_action} />
+          </div>
         </div>
       </section>
 
       <section className="content-section">
         <div className="section-head"><h2>结构化依据</h2></div>
+        <FactorScoreChart factors={result.factor_analysis} />
         <div className="evidence-grid">
           {result.factor_analysis.map((factor) => (
             <article className="evidence-card" key={factor.factor}>

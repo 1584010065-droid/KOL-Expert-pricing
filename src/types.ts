@@ -96,6 +96,23 @@ export interface BenchmarkContext {
   quoteDeviationPercent: number | null;
   quotePosition: string;
   contentFormat: ContentFormat;
+  metricStats: Record<BenchmarkMetricKey, BenchmarkMetricStats>;
+}
+
+export type BenchmarkMetricKey =
+  | "communicationValue"
+  | "conversionValue"
+  | "realFanRate"
+  | "avgInteractions"
+  | "interactionFanRatioIndex"
+  | "interactionStabilityIndex";
+
+export interface BenchmarkMetricStats {
+  min: number | null;
+  p25: number | null;
+  p50: number | null;
+  p75: number | null;
+  max: number | null;
 }
 
 export interface PricingTaskInput {

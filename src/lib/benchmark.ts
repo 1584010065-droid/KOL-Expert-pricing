@@ -1,4 +1,4 @@
-import type { BenchmarkContext, ContentFormat, Creator } from "../types";
+import type { BenchmarkContext, BenchmarkMetricKey, BenchmarkMetricStats, ContentFormat, Creator } from "../types";
 import { cpeFor, cpmFor, exposureFor, priceFor } from "./normalize";
 
 export function buildBenchmark(creators: Creator[], target: Creator, contentFormat: ContentFormat, currentQuote?: number): BenchmarkContext {
@@ -145,7 +145,8 @@ function summarize(pool: Creator[], level: BenchmarkContext["level"], contentFor
     basePrice: round(p50),
     quoteDeviationPercent: deviation === null ? null : round(deviation),
     quotePosition: positionFor(currentQuote, p25, p50, p75),
-    contentFormat
+    contentFormat,
+    metricStats: buildMetricStats(pool)
   };
 }
 
@@ -165,7 +166,46 @@ function emptyBenchmark(contentFormat: ContentFormat, currentQuote: number): Ben
     basePrice: null,
     quoteDeviationPercent: null,
     quotePosition: "数据不足",
-    contentFormat
+    contentFormat,
+    metricStats: emptyMetricStats()
+  };
+}
+
+function buildMetricStats(pool: Creator[]): Record<BenchmarkMetricKey, BenchmarkMetricStats> {
+  return {
+    communicationValue: summarizeMetric(pool.map((creator) => creator.communicationValue)),
+    conversionValue: summarizeMetric(pool.map((creator) => creator.conversionValue)),
+    realFanRate: summarizeMetric(pool.map((creator) => creator.realFanRate)),
+    avgInteractions: summarizeMetric(pool.map((creator) => creator.avgInteractions)),
+    interactionFanRatioIndex: summarizeMetric(pool.map((creator) => creator.interactionFanRatioIndex)),
+    interactionStabilityIndex: summarizeMetric(pool.map((creator) => creator.interactionStabilityIndex))
+  };
+}
+
+function summarizeMetric(values: Array<number | null>): BenchmarkMetricStats {
+  const sorted = values
+    .filter((value): value is number => value !== null && Number.isFinite(value))
+    .sort((a, b) => a - b);
+
+  if (!sorted.length) return { min: null, p25: null, p50: null, p75: null, max: null };
+
+  return {
+    min: round(sorted[0]),
+    p25: round(percentile(sorted, 25)),
+    p50: round(percentile(sorted, 50)),
+    p75: round(percentile(sorted, 75)),
+    max: round(sorted[sorted.length - 1])
+  };
+}
+
+function emptyMetricStats(): Record<BenchmarkMetricKey, BenchmarkMetricStats> {
+  return {
+    communicationValue: { min: null, p25: null, p50: null, p75: null, max: null },
+    conversionValue: { min: null, p25: null, p50: null, p75: null, max: null },
+    realFanRate: { min: null, p25: null, p50: null, p75: null, max: null },
+    avgInteractions: { min: null, p25: null, p50: null, p75: null, max: null },
+    interactionFanRatioIndex: { min: null, p25: null, p50: null, p75: null, max: null },
+    interactionStabilityIndex: { min: null, p25: null, p50: null, p75: null, max: null }
   };
 }
 
