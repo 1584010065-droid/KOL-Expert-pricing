@@ -1,4 +1,4 @@
-import { Bot, Clipboard, Download, Loader2, User, Hash, BarChart3, TrendingUp, Award } from "lucide-react";
+import { Bot, Clipboard, Download, Loader2, User, Hash, BarChart3, TrendingUp, Award, Info } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { buildBenchmark, createAiContext } from "../lib/benchmark";
@@ -156,7 +156,23 @@ export function CreatorDetailPage() {
         <div className="benchmark-viz-grid">
           <div className="benchmark-left">
             <div className="benchmark-level-badge">
-              <span className="level-label">{benchmark.level}</span>
+              <span className="level-label">
+                {benchmark.level}
+                <span className="tooltip-trigger">
+                  <Info size={15} />
+                  <span className="tooltip-content">
+                    <strong>对标池说明</strong>
+                    <br /><br />
+                    <b>一级对标池</b>：内容形式 + 粉丝量级 + 一级账号类型 + 二级账号类型均匹配，样本 ≥ 30
+                    <br /><br />
+                    <b>二级对标池</b>：内容形式 + 粉丝量级 + 一级账号类型匹配，样本 ≥ 30
+                    <br /><br />
+                    <b>三级对标池</b>：内容形式 + 粉丝量级匹配，样本 ≥ 10
+                    <br /><br />
+                    <b>样本不足</b>：匹配样本 &lt; 10，对标结果仅供参考
+                  </span>
+                </span>
+              </span>
             </div>
             <SampleSizeBadge sampleSize={benchmark.sampleSize} confidence={benchmark.confidence} />
             <QuoteDeviationGauge deviation={benchmark.quoteDeviationPercent} position={benchmark.quotePosition} />
@@ -179,6 +195,7 @@ export function CreatorDetailPage() {
 
 function ResultSection({ task }: { task: PricingTaskRecord }) {
   const result = task.aiOutput;
+  const [highlightedFactor, setHighlightedFactor] = useState<string | null>(null);
 
   function downloadJson() {
     const blob = new Blob([JSON.stringify(task, null, 2)], { type: "application/json" });
@@ -224,17 +241,27 @@ function ResultSection({ task }: { task: PricingTaskRecord }) {
             <Stat label="建议成交价" value={formatMoney(result.pricing_result.suggested_price)} />
             <Stat label="建议区间" value={`${formatMoney(result.pricing_result.suggested_price_range.low)} - ${formatMoney(result.pricing_result.suggested_price_range.high)}`} />
             <Stat label="报价偏差" value={formatPercentFlexible(result.pricing_result.quote_deviation_percent)} />
-            <Stat label="下一步" value={result.next_action} />
           </div>
+        </div>
+        <div className="result-ai-summary">
+          <h3>AI智能总结</h3>
+          <p>{result.explanation_text.internal_summary}</p>
+        </div>
+        <div className="result-next-action">
+          <h3>下一步</h3>
+          <p>{result.next_action}</p>
         </div>
       </section>
 
       <section className="content-section">
         <div className="section-head"><h2>结构化依据</h2></div>
-        <FactorScoreChart factors={result.factor_analysis} />
+        <FactorScoreChart factors={result.factor_analysis} onHover={setHighlightedFactor} />
         <div className="evidence-grid">
           {result.factor_analysis.map((factor) => (
-            <article className="evidence-card" key={factor.factor}>
+            <article 
+              className={`evidence-card ${highlightedFactor === factor.factor ? 'highlighted' : ''}`} 
+              key={factor.factor}
+            >
               <h3>{factor.factor}</h3>
               <p>{factor.conclusion}</p>
               <ul>{factor.evidence.map((item) => <li key={item}>{item}</li>)}</ul>
@@ -250,11 +277,6 @@ function ResultSection({ task }: { task: PricingTaskRecord }) {
         </article>
         <article className="content-section">
           <div className="section-head"><h2>话术卡片</h2></div>
-          <div className="script-card">
-            <h3>内部摘要</h3>
-            <p>{result.explanation_text.internal_summary}</p>
-            <button className="ghost-button" onClick={() => copyText(result.explanation_text.internal_summary)}><Clipboard size={15} />复制</button>
-          </div>
           <div className="script-card">
             <h3>外部议价话术</h3>
             <p>{result.explanation_text.external_negotiation_script}</p>

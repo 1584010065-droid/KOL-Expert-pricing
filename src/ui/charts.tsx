@@ -344,8 +344,10 @@ export function SuggestedPriceRangeChart({
 
 export function FactorScoreChart({
   factors,
+  onHover,
 }: {
   factors: PricingResult["factor_analysis"];
+  onHover?: (factorName: string | null) => void;
 }) {
   const data = factors.map((f) => ({
     name: f.factor,
@@ -390,7 +392,13 @@ export function FactorScoreChart({
               fontSize: 13,
             }}
           />
-          <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={20}>
+          <Bar 
+            dataKey="value" 
+            radius={[0, 6, 6, 0]} 
+            barSize={20}
+            onMouseEnter={(_, index) => onHover?.(data[index]?.name ?? null)}
+            onMouseLeave={() => onHover?.(null)}
+          >
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
